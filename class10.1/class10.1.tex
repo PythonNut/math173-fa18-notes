@@ -53,6 +53,12 @@
 \newcommand{\CC}{\mathbb{C}}
 \newcommand{\NN}{\mathbb{N}}
 \newcommand{\QQ}{\mathbb{Q}}
+\newcommand{\op}[1]{\mathop{\mathrm{#1}}}
+\newcommand{\od}{\leftarrow}
+\newcommand{\odd}{\longleftarrow}
+\newcommand{\doo}{\longrightarrow}
+\newcommand{\odo}{\leftrightarrow}
+\newcommand{\oodoo}{\longleftrightarrow}
 
 \setlength{\parskip}{\bigskipamount}
 
@@ -101,5 +107,159 @@
   \textbf{2018/11/19} -- Jonathan Hayase, updated by Prof. Weiqing Gu
 \end{center}
 
+\section{Application of Advanced Linear Algebra to Big Data}
+Consider the following:
+\[\underbrace{L}_{\text{Linear}} \longleftrightarrow \underbrace{A}_{P^{-1}AP}\]
+We are interested in invariants.
+Some examples of invariants are: \(\det \del{P^{-1}AP} = \det A\), \(\trace \del{P^{-1}AP} = \trace A\), and \(\rank \del{P^{-1}AP} = A\).
+If these are the things that we care about then we have the freedom to choose \(P\) to fit our needs, and the quantities we are interested in do not change.
+This is a general technique that we would like to explore.
 
+Suppose \(A\) (say, a data design matrix) is very big and can't fit into memory.
+Consider \(\Omega:\mathcal M_{n \times n}(\mathbb{K}) \to \mathop{\mathrm{BlockD}}^n(\mathbb K)\)
+\[A = \m{\qquad & \qquad & \qquad \\ \qquad & \qquad & \qquad} \mapsto \m{\boxed{h_1\times h_1} & & 0\\ &\ddots\\0 & & \boxed{h_k\times h_k}} \leftarrow B\]
+\[A\bm x = \bm b\qquad A_i\bm x_i = \bm b_i\qquad i=1,2,\dots,k\]
+\[B = P^TAP\]
+We wish to find \(P \in \mathop{\mathrm{perm}}(n)\) which minimizes \(\norm{PAP^* - B_D}\) with large probability.
+
+\subsection{Norms of Matrices}
+\[A \to \text{view this as an operator}\]
+We can talk about the norm that is induced by the vector norm like so:
+\[\norm{A}\triangleq \sup_{\norm{\bm x} = 1} \norm{A\bm x} = \sup_{\bm x \in \RR^n} \frac{\norm{A\bm x}}{\norm{\bm x}}\]
+
+However, there are other norms we might consider, for example:
+\[\norm A = \sqrt{\sum_{i, j} a_{ij}^2} = \sqrt{\trace \del{A^TA}} = \norm{A}_F\]
+
+\subsection{Johnson-Lindenstrauss lemma}
+Suppose we have \(\norm{A\bm x} = \norm{\bm x}\), then \(A\) is orthogonal.
+Then the mapping from JL, if viewed as a matrix, could be thought of as ``almost orthogonal''.
+
+\subsection{Sketching method as a tool for Linear Algebra}
+\subsubsection{Problem 1}
+Approximating Leverage scores:
+A \(d\) dimensional subspace \(W\) contained in \(\RR^n\) can be expressed written as \(\set{x \mid \exists y \in \RR^d, x = Uy}\)
+for some \(U \in \RR^{n \times d}\) with orthonormal columns.
+The squared Euclidean norms of rows of \(U\) are unique up to permutation.
+i.e. they depend only on \(A\) and are known as the Leverage scores of \(A\).
+
+Given \(A\), we would like to output a list of its leverage scores up to \(1 \pm \epsilon\).
+
+e.g. \(A = \m{\bm v_1 & \cdots & \bm v_n}\).
+Consider the column space of \(A\).
+\(\implies\) can find an orthonormal basis of the columns space of \(A\).
+
+\subsubsection{Problem 2}
+Least squares regression:
+
+Given \(A \in \RR^{n \times d}\) and \(\bm b\in \RR^n\) want to compute \(\norm{A \bm{\tilde x} -\bm b} \le (1 + \epsilon)\min_{x \in \RR^d}\norm{A\bm x - b}\).
+
+\subsubsection{Problem 3}
+Given \(A \in \RR^{n \times d}\) and integer \(k > 0\).
+Compute \(\tilde A_k \in \RR^{n \times d}\) with \(\rank \del{\tilde A} \leq k\) so that \(\norm{A - \tilde A_k}_F \leq (1 + \epsilon)\min_{\rank(Ak) < k}\norm{A - A_k}\).
+
+Today, we will focus on Problem 2.
+
+\subsection{More on Least Squares Regression}
+Q: How to find an approximate solution \(\bm x\) to \(\min_x \norm{A\bm x - \bm b}\).
+Goal: output \(\bm{\tilde x}\) for which \(\norm{A\bm{\tilde x} - b}_2 \leq (1 + \epsilon)\min \norm{A\bm x - \bm b}\).
+
+Idea: Draw \(S\) from a \(k \times n\) random family of matrices for value \(k \ll n\):
+Compute \(SA \) and \(Sb\) and output the solution \(\bm{\tilde x}\) to \(\min\norm{(SA)\bm x - S\bm b}\).
+e.g. \(S\) is \(d^2/\epsilon \times n\) matrix of i.i.d. normal random variables.
+E.g. \[S = \m{\pm e_{i_1}&\pm e_{i_2}&  \dots &\pm e_{i_k}}\]
+\[\m{\bm e_2 & -\bm e_1 & \bm e_1 & \dots} = \m{0 & -1 & 1 &\cdots& 0 & 0\\1 & 0 & 0 & \cdots & 0 & 0\\ 0 & 0 & 0 & \cdots & -1 & 0\\ 0 & 0 & 0 & \cdots & 0 & 1}\m{RA_1 \\\vdots \\ RA_n}\]
+
+Original approach/analysis was very long and complicated, then Nelson and Nugyen\footnote{is this right...} used Advanced Linear Algebra + Probability to give a much simpler proof.
+
+Key idea: Consider \(\m{A \mid b} \triangleq B\) and consider the column space of \(B\).
+Let \(U\) be a matrix with columns which form an orthonormal basis of the column space of \(B\).
+Claim: It sufficies to show \(\norm{\Pi U \bm x}_2 = (1 \pm \epsilon)\norm{\bm x}_2\).
+This will imply \(\norm{S(A\bm x - \bm b)}_2 = \del{1 \pm \epsilon} \norm{A\bm x - \bm b}_2\) for all \(\bm x\).
+
+\subsection{Basics of Least Squares}
+\[y^{(i) = \theta_0 + \theta_1 x_1^{(i)} + \dots + \theta_n x_n^{(n)}}\]
+\[\m{y^{(1)\\\vdots\\y^{(i)}\\\vdots\\y^{(N)}}} = \underbrace{\m{\vdots & &&\vdots\\1 & x_1^{(i)} & \cdots & x_n^{(i)}\\ \vdots & &&\vdots}}_{X} \m{\theta_0\\\theta_1\\\vdots\\\theta_n}\]
+or
+\[\bm y = X\bm \theta = \underbrace{\theta_1x_1 + \theta_2x_2 + \dots + \theta_mx_m}_{\text{column space of \(X\)}} \]
+where we wish to find \(\bm \theta\).
+Then we may write
+\[X^T\bm y = X^TX\bm \theta \implies \bm \theta = (X^TX)^{-1}(X^T\bm y)\]
+
+\subsection{An aside on the product of a matrix and its adjoint}
+\[\bm x^*A^*A\bm x = (A\bm x)^*(Ax) = \norm{Ax}^2 \geq 0\implies \lambda_i \geq 0\]
+so
+\[\norm{A}_2 = \sqrt{\lambda_{\max}(A^*A)} = \sigma_{\max}(A)\]
+
+then
+\[P^{-1}A^^AP = \m{\lambda_1\\&\ddots\\&&\lambda_n}\]
+\[\trace \del{P^^{-1}A^*AP} = \lambda_1 + \dots + \lambda_n\]
+and
+\[\norm{A}_F = \sqrt{\trace \del{A^*APP^{-1}}} = \sqrt{\lambda_1 + \dots + \lambda_n} = \sqrt{\sum\sigma_i^2} = \del{\sum\sigma_i}^{\sfrac12}\]
+
+\subsection{Why orthonormal bases}
+Suppose we have an orthonormal basis \(\set{\bm u_1 , \dots, \bm u_n}\).
+Then any \(\bm x\) can be written as \(\bm x = x_1\bm u_1 + \dots + x_n \bm u_n\) and \(A\bm x = x_1A\bm u_1 + \dots + x_n A\bm u_n = x_1\lambda_1\bm u_1 + \dots + x_n \lambda_n\bm u_n\).
+\[\norm{Ax} = \sqrt{\del{\lambda_1x_1}^2 + \dots + \del{\lambda_nx_n}^2} \geq \sqrt{\del{\lambda_nx_1}^2 + \dots + \del{\lambda_nx_n}^2}=\sqrt{\lambda_n^2 (x_1^2 + \dots + x_n^2)} \]
+\[=\sqrt{\lambda_n^2 \norm{x}} = \sqrt{\lambda_n^2}\]
+If  A is hermitian then \(\norm{Ax} \geq \lambda_{\min}\).
+Similarly, \[\norm{Ax} \leq \sqry{\del{\lambda_1x_1}^2 + \dots + \del{\lambda_nx_n}^2} = \lambda_{\max} = (1 \pm \epsilon) \norm{Ax - b}_2\]
+for all \(x\).
+
+\subsection{Picking up from before...}
+Claim: \(SU\) is \(\frac{(d+1)^2}{\epsilon^2}\times(d+1)\) matrix.
+
+Claim: \(\norm{(SU)^TSU - I}_2 \leq \norm{U^TS^TSU - I}_F \leq \epsilon\).
+
+Definition: An oblivious subspace embedding (OSE) is a distribution \(D\) over matrices \(\Pi \in \RR^{n\times m}\) given some parameters \(\epsilon, \delta\) such that for any linear subspace \(W \subseteq \RR^n\) with \(\dim W = d\), the following holds:
+\[\mathcal P_{\Pi \sim D}\del{\forall x\in W, \norm{\Pi x}_2 \in (1 \pm \epsilon)\norm{x_2}} > \frac{2}{3}\]
+N N showed that an OSE exists with \(m = O(d^2/\epsilon^2)\) and where \(\Pi \in \mathop{\mathrm{supper}}(\mathcal O)\) has exactly \(s = 1\) nonzero entries per column.
+(This improves Woodruff's result.)
+
+Goal: Obtain a fast randomized Algorithm for several numerical linear algebra problems.
+We focus on Least Squares problem \(\arg\!\min_{x \in \RR^d}\norm{A\bm x - \bm b}\).
+
+Key idea: Use sketch as application to \(\ell_2\)-estimation in data streams only require \(h\) to be pairwise independent and \(\sigma\) 4-wise independent.
+Claim: \(A\) matrix \(\Pi\) preserving the Euclidean norm of all vectors \(x \in W\) up to \(1 \pm \epsilon\) is equivalent to
+\[\Pi U \bm y = \del{\pm \epsilon} \norm{\bm y}\]
+simultaneously for \(y \in \RR^d\) if and only if all singular values lie in the interval \(\intcc{1 - \epsilon, 1+ \epsilon}\).
+
+Claim/Recall: Eigenvalues of orthonormal matrices have norm 1.
+E.g.
+\[A =\m{\cos \theta & - \sin \theta\\ \sin \theta & \cos \theta}\]
+has no eigenvalues geometrically, but with complex eigenvalues \(\lambda_i\), \(\abs{\lambda_i} = 1\).
+
+Proof: Let \(\lambda, \bm x\) be an eigenvalue/vector pair, so \(A\bm x = \lambda\bm x\).
+\begin{align*}
+  (Ax)^*(Ax) &= (\overline{Ax})^T(Ax)\\
+            &= \overline{x}^T\overline{A}^TAx\\
+  &= \overline{x}^tx = \norm{x}^2
+\end{align*}
+But
+\begin{align*}
+  (Ax)^*(Ax) = \norm{Ax}^2 = \norm{\lambda x}^2 = \abs{\lambda}^2\norm{x}^2
+\end{align*}
+so \(\abs{\lambda} = 1\).
+
+Write \(S = (\Pi U)^*(\Pi U)\) (note, \(S\) here is not the same as before) so that we want to show that all of the eigenvalues of \(S\) lie in \(\intcc{(1 - \epsilon)^2, (1 + \epsilon)^2}\).
+
+Trick: \(S = I + (S - I)\).
+Use Weyl's inequality (described in the next section).
+
+Let \(M = S\) with eigenvalues \(\mu_i\), \( H = I\) with eigenvalues \(1\), and \(P = S-I \) with eigenvalues \(\rho\_i\).
+\[-\norm{S-I}_2 \leq\rho_n \leq \mu_i -1 \leq \rho_1 \leq \norm{S-I}_2\]
+Because \(S = I + (S - I)\), we can show all eigenvalues of \(S\) are \(1 \pm \norm{S-I}\).
+And we want to bound \(\norm{S-I}\).
+We ultimately are showing that \(S\) is the JL transformation.
+
+
+\subsubsection{Weyl's inequality}
+Let \(M\), \(H\), \(P\) be \(n \times n\) hermitian matrices with only real eigenvalues.
+where \(M\) has eigenvalues \(\mu_1 \geq \dots \geq \mu _n\), \(H\) had eigenvalues \(\gamma_1 \geq \dots \geq \gamma_n\), and \(P\) has eigenvalues \(\rho_1 \geq \dots \geq \rho_n\).
+Then for  \(1 \leq i \leq n\), it holds that \(\rho_n \leq \mu_i - \gamma_i \leq \rho_1\).
+Proof [Tao 12].
+
+\subsection{Continuing from before}
+We want to show that \(\norm{S-I}\) is small with good probability by Markov's inequality.
+\[\mathbb P \del{\norm{S_I} \geq t} = \mathbb P \del{\norm{S-I}^2 \geq t^2} \leq \frac{\norm{S-I}^2}{t^2} \leq \frac{\norm{S-I}_F}{t^2}\]
+and then we proceed to bound.
 \end{document}
