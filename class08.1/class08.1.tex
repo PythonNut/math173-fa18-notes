@@ -1,0 +1,212 @@
+%&myformat
+\documentclass{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{commath}
+\usepackage{dsfont}
+\usepackage{xfrac}
+\usepackage{siunitx}
+\usepackage[parfill]{parskip}
+\usepackage[makeroom]{cancel}
+\usepackage{mathtools}
+\usepackage{tabu}
+\usepackage{bm}
+\usepackage[utf8]{inputenc}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{mdframed}
+\usepackage{booktabs}
+\usepackage{tikz-cd}
+\usepackage{centernot}
+% \usepackage{physics}
+\usepackage{mathrsfs}
+\newcommand{\ihat}{\mathbf{\hat i}}
+\newcommand{\jhat}{\mathbf{\hat j}}
+\newcommand{\khat}{\mathbf{\hat k}}
+\newcommand{\rhat}{\mathbf{\hat r}}
+\newcommand{\thetahat}{\bm{\hat \theta}}
+
+\DeclareMathOperator{\trace}{tr}
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\range}{range}
+\DeclareMathOperator{\nullity}{nullity}
+\DeclareMathOperator{\proj}{proj}
+\DeclareMathOperator{\vspan}{span}
+\DeclareMathOperator{\curl}{curl}
+\DeclareMathOperator{\divergence}{div}
+\DeclareMathOperator{\hess}{H}
+\DeclarePairedDelimiter\ip{\langle }{\rangle}
+
+\newcommand{\m}[1]{\begin{bmatrix} #1 \end{bmatrix}}
+\newcommand{\sm}[1]{\left[\begin{smallmatrix} #1 \end{smallmatrix}\right]}
+\newcommand{\vm}[1]{\begin{vmatrix} #1 \end{vmatrix}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\NN}{\mathbb{N}}
+\newcommand{\QQ}{\mathbb{Q}}
+
+\setlength{\parskip}{\bigskipamount}
+
+\renewcommand{\labelenumi}{{\arabic{enumi}.}}
+\renewcommand{\labelenumii}{(\roman{enumii})}
+\renewcommand{\labelenumiii}{(\arabic{enumiii})}
+
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+
+% \usepackage{xcolor}
+% \definecolor{base03}{HTML}{002b36}
+% \definecolor{base0}{HTML}{839496}
+% \pagecolor{base03}
+% \color{base0}
+
+\pgfplotsset{compat=1.15}
+
+\makeatletter
+\renewcommand*\env@matrix[1][*\c@MaxMatrixCols c]{%
+  \hskip -\arraycolsep
+  \let\@ifnextchar\new@ifnextchar
+  \array{#1}}
+\makeatother
+
+\usepackage{xparse}
+
+\ExplSyntaxOn
+    \NewDocumentEnvironment{aside} { o }
+     {\noindent\ignorespaces\\[0.5em]
+       \begin{mdframed}[nobreak=true,backgroundcolor=gray!10]
+         \IfNoValueTF{#1}{}{\textbf{#1}}
+     }
+     {
+     \end{mdframed}
+     }
+\ExplSyntaxOff
+
+\begin{document}
+
+\begin{center}
+  \Large Advanced Linear Algebra Week 8 Day 1
+  \normalsize
+
+  \textbf{2018/11/05} -- Jonathan Hayase, updated by Prof. Weiqing Gu
+\end{center}
+
+\section{Convexity}
+\subsection{Convexity and optimization}
+Motivation: Consider optimization \(\min f(x)\) such that \(x \in \Omega\).
+
+We're interested in global minima.
+We want to make a statement about global solutions.
+
+Definition: A set \(\Omega \subseteq \RR^n\) is convex if for \(x, y \in \Omega\), all \(z = \lambda x + (1-\lambda)y \in \Omega\) for \(\lambda \in \intcc{0, 1}\), and \(z\) is called a convex combination.
+
+Definition: A function \(f : \RR^n \to \RR\) is convex if its domain \(\mathop{\mathrm{dom}}\) is a convex set and for all \(x, y \in \mathop{\mathrm{dom}}\) for any \(\lambda \in \intcc{0, 1}\) we have
+\[f(\lambda x + (1-\lambda)y) \leq \lambda f(x)  + (1-\lambda)f(y)\]
+For \(n = 1\), you could visualizes this as the function always lying below its secants.
+
+Theorem: Consider an optimization problem \(\min f(x)\) such that \(x \in \Omega\) where \(f\) is a convex function and \(\Omega\) is a convex set.
+Then any local minimum is a global minimum.
+
+Proof: Let \(\overline x\) be a local minimum.
+Therefore, \(\overline x \in \Omega\) and there exists \(\epsilon > 0\) such that \(f(\overline x) \leq f(x)\) for all \(x \in B(\overline x, \epsilon)\).
+Suppose for proof by contradiction, that there exists a \(z \in \Omega\) with \(f(z) < f(\overline x)\).
+Since \(\Omega\) is convex, \(\lambda \overline x + (1- \lambda)z \in \Omega\) and since \(f\) is convex,
+\begin{align*}
+  f(\lambda\overline x + (1-\lambda)z) &\leq \lambda f(\overline x) + (1 - \lambda)f(z)\\
+                                       &<f(\overline x) + (1-\lambda)f(\overline x)\\
+  &= f(x).
+\end{align*}
+Let \(\lambda = 1\), then \(f(\overline x) < f(\overline x)\).
+Thus we have attained our contradiction.
+
+\subsection{Midpoint convexity}
+Definition: A set \(\Omega \subseteq \RR^n\) is midpoint convex if for \(\forall x, y \in \Omega\), the midpoint between \(x\) and \(y\) is also in \(\Omega\),
+\[x, y \in \Omega \implies \frac{x + y}{2} \in \Omega\]
+Theorem: A closed midpoint convex set is convex.
+
+\subsection{Examples of convex sets}
+\begin{enumerate}
+\item Hyperplanes \(\set{\bm x \in \RR^n \mid \bm a^T\bm x = b}\) where \(\bm a \neq 0\in \RR^n\) is the normal vector and \(b \in \RR\).
+\item Half space \(\set{\bm x \in \RR^n \mid \bm a^T\bm x \leq b}\) where \(\bm a \neq 0 \in \RR^n\) and \(b \in \RR\).
+\item Solid ellipsoids \(\set{\bm x \in \RR^n \mid (\bm x - \bm x_c)^TP(\bm x-\bm x_c) \leq r}\) where \(x_c \in \RR^n\), \(r \in \RR\), and \(P \succ 0\).
+
+\item Set of symmetric, positive definite, matrices, \(S^{n \times n}_+ = \set{P \in S^{n \times n} \mid P \succeq 0}\).
+  Proof: Let \(\lambda \in \intcc{0, 1}\).
+  Suppose \(y \in \RR^n\), then
+  \begin{align*}
+    y^T(\lambda A + (1-\lambda)B)y = \lambda y^T Ay + (1-\lambda)y^TBy \geq 0
+  \end{align*}
+  so \(\lambda A + (1-\lambda)B \succeq 0\), as desired.
+
+\end{enumerate}
+
+Say in \(\RR^3\), \(S^{2 \times 2}_+ = \set{(x, y, z) \mid \sm{x & y\\ y & z} \succeq 0}\).
+\[\det \m{x & y\\ y & z} = xz - y^2 > 0\]
+
+\subsection{Operations}
+If \(\Omega_1\) and \(\Omega_2\) are convex sets, \(\Omega_1 \cap \Omega_2\) is convex, but \(\Omega_1 \cup \Omega_2\) is not always convex.
+
+Proof: Pick \(x, y \in \Omega_1 \cap \Omega_2\).
+Then \(\lambda x + (1-\lambda)y \in \Omega_1\), since \(x, y \in \Omega_1\) and \(\lambda x + (1-\lambda)y \in \Omega_2\) since \(x, y \in \Omega_2\).
+
+Application: A polyhedron can be written as \(\set{x | Ax \leq b}\) where \(A_{m \times m}\) and \(b_{m \times 1}\).
+
+Example:
+\[A = \m{-1 & 0 \\ 0 & -1\\ 0 & 1\\ 1 & 1}\qquad b = \m{0\\0\\1\\3}\]
+
+\section{Relations between convex functions and convex sets}
+\subsection{Epigraphs}
+The epigraph \(\mathop{\mathrm{epi}}(f)\) of a function \(f: \RR^n \to \RR\) is a subset of \(\RR^{n+1}\) defined by
+\[\mathop{\mathrm{epi}} = \set{(x, y) \mid x \in \mathop{\mathrm{dom}}(f), f(x) \leq t}\]
+
+Recall: level curves \(f(\bm x) = t\). If the function is convex, then the region bounded by its level curves is also convex.
+
+Theorem: A function \(f: \RR^n \to \RR\) is convex if and only if its epigraph is convex.
+
+\subsection{Convex Hulls}
+Given \(x_1 \dots, x_m \in \RR^n\), a point of the form \(\lambda_1x_1 + \dots+ \lambda_m x_m\) where \(\sum_{i=1}^m \lambda_i = 1\) is called a convex combination.
+
+Lemma: Let \(S \subseteq \RR^n\) is convex iff it contains every convex combination of its points.
+
+Definition: The convex hull of a set \(S \subseteq RR^n\) denoted by \(\mathop{\mathrm{conv}}(S)\) is the set of all convex combinations of the points in \(S\).
+\[\mathop{\mathrm{conv}}(s) = \set{\sum_{i = 1}^m\lambda_i x_i\mathrel{\bigg|} x_i \in S, \lambda_i \geq 0, \sum_{i = 1}^m \lambda_i = 1}\]
+
+\section{Carath\'eodory's theorem}
+Consider a set \(S \subseteq \RR^d\).
+Then every point in \(\mathop{\mathrm{conv}}(S)\) can be written as a convex combination of \(d+1\) points in \(S\).
+
+Prof. Gu came up with a solution (?) using some algebra.
+
+
+Proof: Let \(x \in \mathop{\mathrm{conv}}(S)\).
+Then \(x = \alpha_1y_1 + \dots + \alpha_m y_m\) for \(y_i \in S\), \(\alpha_i \geq 0\), \(\sum \alpha_i = 1\).
+If \(m < d\), we are done.
+
+Suppose \(m > d+1\), then we'll give another representation of \(x\) using \(m - 1\) points. (Rest later)
+
+\section{Separating Hyperplane Theorem}
+Theorem: Let \(C\) and \(D\) be two convex sets in \(\RR^n\) that do not intersect (\(C \cap D = \emptyset\)).
+Then there exists an \(a \neq 0\in \RR^n\), \(b \in \RR\) such that the plane \(\set{x \in \RR^n \mid a^Tx = b}\) separates the points of \(C\) and \(D\).
+Written another way, \(a^tx \leq b\) for all \(x \in C\) and \(a^Tx \geq b\) for all \(x \in D\).
+
+Remark: Neither of the inequalities can be made strict.
+Counterexample: suppose \(C\) is the negative real numbers and \(D\) is the nonnegative real numbers.
+
+\section{Hahn-Banach separation Theorem}
+Let \(K \in \set{\RR, \CC}\) and \(V\) is a topological vector space over \(K\).
+If \(A, B\) are convex and \(A \cap B = \emptyset\), then if \(A\) open, then
+\begin{enumerate}
+\item There exists a continuous linear map from \(\lambda : V \to K\) such that
+  \[\Re(\lambda(a)) < t \leq \Re(\lambda(b))\]
+  for all \(a \in A, b \in B\).
+
+\item If \(V\) is locally compact, \(B\) is closed, then there exists a continuous linear map \(\lambda : V \to K\) and \(s, t \in \RR\) such that \(\Re(\lambda(a)) < t < s < \Re(\lambda(b)) \)
+  for \(a \in A\) and \(b \in B\).
+\end{enumerate}
+
+\end{document}

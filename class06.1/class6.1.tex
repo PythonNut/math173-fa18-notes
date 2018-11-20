@@ -1,0 +1,312 @@
+%&myformat
+\documentclass{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{commath}
+\usepackage{dsfont}
+\usepackage{xfrac}
+\usepackage{siunitx}
+\usepackage[parfill]{parskip}
+\usepackage[makeroom]{cancel}
+\usepackage{mathtools}
+\usepackage{tabu}
+\usepackage{bm}
+\usepackage[utf8]{inputenc}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{mdframed}
+\usepackage{booktabs}
+\usepackage{tikz-cd}
+\usepackage{centernot}
+% \usepackage{physics}
+\usepackage{mathrsfs}
+\newcommand{\ihat}{\mathbf{\hat i}}
+\newcommand{\jhat}{\mathbf{\hat j}}
+\newcommand{\khat}{\mathbf{\hat k}}
+\newcommand{\rhat}{\mathbf{\hat r}}
+\newcommand{\thetahat}{\bm{\hat \theta}}
+
+\DeclareMathOperator{\trace}{tr}
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\range}{range}
+\DeclareMathOperator{\nullity}{nullity}
+\DeclareMathOperator{\proj}{proj}
+\DeclareMathOperator{\vspan}{span}
+\DeclareMathOperator{\curl}{curl}
+\DeclareMathOperator{\divergence}{div}
+\DeclareMathOperator{\hess}{H}
+\DeclarePairedDelimiter\ip{\langle }{\rangle}
+
+\newcommand{\m}[1]{\begin{bmatrix} #1 \end{bmatrix}}
+\newcommand{\sm}[1]{\left[\begin{smallmatrix} #1 \end{smallmatrix}\right]}
+\newcommand{\vm}[1]{\begin{vmatrix} #1 \end{vmatrix}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\NN}{\mathbb{N}}
+\newcommand{\QQ}{\mathbb{Q}}
+
+\setlength{\parskip}{\bigskipamount}
+
+\renewcommand{\labelenumi}{{\arabic{enumi}.}}
+\renewcommand{\labelenumii}{(\roman{enumii})}
+\renewcommand{\labelenumiii}{(\arabic{enumiii})}
+
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+
+% \usepackage{xcolor}
+% \definecolor{base03}{HTML}{002b36}
+% \definecolor{base0}{HTML}{839496}
+% \pagecolor{base03}
+% \color{base0}
+
+\pgfplotsset{compat=1.15}
+
+\makeatletter
+\renewcommand*\env@matrix[1][*\c@MaxMatrixCols c]{%
+  \hskip -\arraycolsep
+  \let\@ifnextchar\new@ifnextchar
+  \array{#1}}
+\makeatother
+
+\usepackage{xparse}
+
+\ExplSyntaxOn
+    \NewDocumentEnvironment{aside} { o }
+     {\noindent\ignorespaces\\[0.5em]
+       \begin{mdframed}[nobreak=true,backgroundcolor=gray!10]
+         \IfNoValueTF{#1}{}{\textbf{#1}}
+     }
+     {
+     \end{mdframed}
+     }
+\ExplSyntaxOff
+
+\begin{document}
+
+\begin{center}
+  \Large Advanced Linear Algebra Week 6 Day 1
+  \normalsize
+
+  \textbf{2018/10/15} -- Jonathan Hayase, updated by Prof. Weiqing Gu
+\end{center}
+
+\section{Applications to Advanced Machine Learning}
+
+Today: Concentration Inequality
+
+Deals with deviation of a function of independent random variables from their expectation.
+We start with \(f : \RR \to \RR\) then in multi we saw \(f : \RR^n \to \RR^m\).
+In this class we saw \(f:\mathsf{M}_{n\times m}(\RR) \to \mathsf{M}_{n\times m}(\RR)\).
+Today, we will study \(f: \chi^n \to \RR\) where
+Where \(x_1, x_2, \dots, x_n\) take values from \(\chi\) space.
+
+Now consider the
+\[x_1 + \cdots + x_n \to f(x) = f(x_0) + (x - x_0)\nabla f(x - x_0) + \frac{1}{2!} (x-x_0)^T\nabla^2f(x-x_0) (x-x_0) + \cdots\]
+
+Recall the Law of Large Numbers of Probability Theory.
+The sum of independent random variables are, under very mild condition\footnote{I don't really know what this means}, close to their expectation with large probability.
+
+Classically, we are interested in \(\sum_{i = 1}^n x_i\).
+Recently, \(f(x_1, \dots, x_n) = z\) where \(x_1, \dots, x_n\) are independent random variables, \(f: \chi^n \to \RR\).
+For example, consider the random variables forming a matrix \(X = \del{x_{ij}}\), where \(x_{ij}\) are all independent.
+And \(f(X) = \trace\del{X^TAX}\) for fixed \(A\).
+
+Let \(x_1, \dots, x_n\) be independent random variables in \(\chi\).
+Let \(f : \chi^n \to \RR\) and \(z = f(x_1, \dots, x_n)\).
+
+Q: How large are ``typical'' deviations of \(Z\) from \(\mathbb{E}Z\).
+
+Consider \(\mathbb{P}\set{Z >  \mathbb{E}[z]+ t }\) and \(\mathbb{P}\set{Z < \mathbb{E}[z] - t}\) for \(t > 0\).\footnote{\(\mathbb P\) and \(\mathop{\mathrm{Pr}}\) are equivalent notation and will be used interchangably in this course.}
+
+\subsection{Markov Inequality}
+If \(Z \geq 0\) then \(\mathbb P \set{Z \geq \mathbb EZ + t} \leq \frac{\mathbb EZ}{t}\).
+
+Trick: In application of you don't know \(Z \geq 0\).
+
+Because \(Z \geq 0\), \(\mathbb E Z \geq 0\), so \(Z \geq \mathbb EZ + t \geq t\).
+Claim \(\mathbb P(Z \geq t) \leq \frac{\mathbb EZ}{t}\) or \(\mathbb P(X \geq t)\leq \frac{\mathbb EX}{a}\).
+
+Proof: (we use an indicator function.)
+
+Consider a diagram plotting \(F(x)\) vs \(a\).
+There are two cases \(x< a\) and \(x \geq a\).
+For case 1, \(a\mathds 1_{X \geq a} = a0 = 0 \leq x\) and \(a\mathds 1_{x \geq a} = a1 = a \leq x\).
+For both cases, \(x \geq a\mathbb a_{x\geq a}\), so \(\mathbb E[x] \geq \mathbb E[a\mathds 1_{x \geq a}] = a \mathbb E[\mathds 1_{x \geq a}]\), so \(\mathbb E \geq a \mathbb{P}\set{x \geq a}\) and \(\mathbb P\set{x \geq a} \leq \frac{\mathbb E[x]}{a}\), as desired.
+
+\subsubsection{Example}
+
+Give you intuition of Markov Inequality.
+
+Suppose we have a die.
+
+\[\begin{tabu}{ccc}
+    \toprule
+    & \text{even} & \text{uneven}\\
+    x & \mathbb P\set{x = x} & \mathbb P\set{x = x}\\
+    \midrule
+  1 & \frac{1}{6} & 0 \\
+  2 & \frac{1}{6} & 0 \\
+  3 & \frac{1}{6} & \sfrac{1}{2}\\
+  4 & \frac{1}{6} & \sfrac{1}{2}\\
+  5 & \frac{1}{6} & 0\\
+  6 & \frac{1}{6} & 0\\
+  \bottomrule
+\end{tabu}\]
+In the first case \(\mathbb E[x] = 3.5\).
+
+Interested in \(\mathbb P(x \geq 6) = P(x = 6)\).
+\[\mathbb E[x] = \sum x \mathbb P(x = x) = 1 \mathbb P(x = 1) + \cdots + 6 \mathbb P(x = 6) \geq 6 \mathbb P(x = 6)\]
+
+Suppose Markov Inequality does not hold, then
+\[\mathbb P(x \geq 6) > \frac{3.5}{6}.\]
+Then \(\mathbb E[x] \geq 6\mathbb P (x = 6) > 6 \cdot\frac{3.5}{6} = 3.5\), which is a contradiction.
+
+
+\subsection{Chebyshev's Inequality}
+\[\mathbb P\del{\abs{x - \mu} \geq a} \leq \frac{\mathop{\mathrm{Var}}(x)}{a^2}\]
+Proof
+\begin{align*}
+  \mathbb P(\abs{x - \mu} \geq a) &= \mathbb P\del{\abs{x - u}^2 \geq a^2}\\
+                                  &\leq \frac{\mathbb E[\abs{x - \mu}^2]}{a^2} && \text{by Markob inequality}\\
+                                  &= \frac{\mathbb E[(x-\mu)^2]}{a^2}\\
+  &= \frac{\mathop{\mathrm{Var}}(x)}{a^2}
+\end{align*}
+
+\subsubsection{Applications of Chebyshev's Inequality}
+
+\begin{enumerate}
+\item Weak Law of Large Numbers
+  \[\lim \mathbb P(\abs{\overline{x}_N - \mu} > \epsilon) = 0\]
+  Proof: Use Chebyshev's Inequality
+  \[\mathbb P \del{\abs{\overline{x}_N - \mu} > \epsilon} \leq \frac{\mathop{\mathrm{Var}}(\overline{x}_N)}{\epsilon^2} = \frac{\sigma^2}{N\epsilon^2} \to 0\]
+  as \(N \to \infty\).
+  Where \(\overline{x}_N = \frac{1}{N} \sum_{i=1}^Nx_i\) and \(\mathop{\mathrm{Var}} = \frac{1}{N^2}\sum_{i=1}^N \mathop{\mathrm{Var}}(x_i) = \frac{N\sigma^2}{N^2} = \frac{\sigma^2}{N}\).
+
+\item Chernoff bounds
+  Let \(x_1, \dots, x_n\) be independent random v. real variables.
+  By independence, we have \(\mathop{\mathrm{Var}}(z) = \sum_{i=1}^N\mathop{\mathrm{Var}}(x_i)\).
+  Now if they are identically distributed, then
+  \[\mathop{\mathrm{Var}}\del{\sum x_i} = n\mathop{\mathrm{Var}}(x_1)\qquad\text{and}\qquad\mathbb{E}\del{\sum x_i} = n \mathbb E[x_1]\]
+  So
+  \begin{align*}
+    \mathbb P\set{\abs{\sum_{i=1}^n x_i - n \mathbb E[x_1]} \geq t} &\leq \frac{\mathop{\mathrm{Var}}(x)}{t^2} && \text{Chebyshev's Inequality}\\
+                                                                &= \frac{n\mathop{\mathrm{Var}}(x_1)}{t^2}\\
+    \mathbb P\set{\abs{\sum_{i=1}^n x_i - n \mathbb E[x_1]} \geq t\sqrt{n}} &\leq  \frac{\mathop{\mathrm{Var}}(x)}{\del{t\sqrt{n}}^2} = \frac{\mathop{\mathrm{Var}}(x_1)}{t^2} && \text{Chebyshev's Inequality}\\
+    &\leq \exp\del{-2t^2\mathop{\mathrm Var}(x_1)} && \text{central limit theorem}
+  \end{align*}
+  So we expect an exponential ail decreasing in \(\sfrac{t^2}{\mathop{\mathrm{Var}}(x_1)}\).
+
+  Trick: Use Markov's Inequality in a more clever way.
+  If \(\lambda > 0\).
+  \begin{align*}
+    \mathbb P(Z - \mathbb EZ > t) &= \mathbb{P}\del{e^{\lambda(z - \mathbb{E}Z)} > e^{\lambda t}} && \text{since exponential is convex}\\
+    &\leq \frac{\mathbb E e^{\lambda(Z - \mathbb EZ)}}{e^{\lambda t}}.
+  \end{align*}
+  Now generate bounds for the moment generating function \(\mathbb Ee^{\lambda (Z - \mathbb EZ)}\) and optimize \(\lambda\).
+  We can show if \(x_1, \dots, x_n \in \intcc{0, 1}\), then
+  \[\mathbb Ee^{\lambda (Z - \mathbb EZ)} \leq e^{\sfrac{\lambda^2}{8}}.\]
+  If \(Z = \sum_{i=1}^n x_i\) for independent \(x_i\), then
+  \[\mathbb e^{\lambda Z} = \mathbb E \prod _{i=1}^n e^{\lambda x_i} = \prod_{i=1}^n\mathbb E e^{\lambda x_i}\]
+  Now, it suffices to find \(\mathbb E e^{\lambda x_i}\).
+
+\end{enumerate}
+
+\section{Bounded Difference Inequality}
+
+Suppose \(Z_1, \dots, Z_n\) are independent random variables taking values in some space \(\mathcal{Z}\) and \(f : Z^n \to \RR\) is a function that satisfies for all \(i\)
+\[\sup_{z_1, \dots, z_n, z_i'} \set{\abs{f(z_1, \dots, z_{i-1}, z_i, z_{i+1} , \dots, z_n) - f(z_1, \dots, z_{i-1}, z_i', z_{i+1} , \dots, z_n)}} \leq x_i\]
+for some constant \(c_1, \dots, c_n\).
+Then we have
+\[\mathbb P \set{\abs{f(z_1^m) - \mathbb E[f(z_1^m)]} \geq t} \leq \exp\del{\frac{-2t^2}{\sum_{i=1}^nc_i^2}}.\]
+
+\section{Rademacher Average}
+
+Goal want to bound the difference between empirical and true expectations uniformly over some function class \(G\).
+In the context of classification or regression, we are typically interested in a class \(g\) that is the loss class associated with some function class \(\mathscr{F}\).
+
+i.e. given a bounded loss function: \(\phi: D \times y \to \intcc{0, 1}\) we consider the class
+\[\phi_{\mathscr{F}} : \set{(x , y) \mapsto \phi(f(x), y)} \mid f \in \mathscr{F}\]
+Rademacher average gives us a powerful tool to obtain uniform convergence results.
+\[\mathbb E \del{\sup \del{\mathbb E[g(z)] - \frac{1}{m}\sum_{i=1}^mg(z_i)}}\]
+where \(z, \set{z_i}_{i=1}^m\) are i.i.d. in some space \(\mathscr{F}\).
+Here \(g \in \intcc{0, 1}^2\).
+
+By the Bounded difference inequality, the random quantity
+\[\sup \del{\mathbb E [g(z)] - \frac{1}{m}\sum_{i=1}^m g(z_i)}\]
+will be close to the above expectation with high probability.
+
+Let \(\epsilon_1, \dots, \epsilon_m\) be i.i.d. \(\set{\underline{t}}\)-values random variable, w/ \(\mathbb P(\epsilon_i = 1) =\mathbb P(\epsilon_i = -1) = \sfrac{1}{2}\).
+They are also independent of the sample \(z_1, \dots, z_m\).
+
+Define the empirical Rademacher average of \(g\) as
+\[\mathop{\text{\^Rm}}(g) \triangleq \mathbb E[\mathop{\text{\^Rm}}(g)]\]
+Theorem
+\[\mathbb E \sbr{\sup \del{\mathbb E [g(z)] - \frac{1}{m}\sum_{i=1}^m g(z_i)}} \leq 2\mathop{\text{\^Rm}}(g)\]
+
+\section{Topic: The Johnson–Lindenstrauss Theorem}
+
+Theorem: For any \(0 < \epsilon < 1\) and any integer \(n\) let \(k\) be a positive integer such that
+\[k \geq 4\del{\sfrac{\epsilon^2}{2} - \sfrac{\epsilon^3}{3}}^{-1} \ln n\]
+Then for any set \(V\) in \(\RR^d\) of \(n\) points, there exists a linear functional (or projection) \(f : \RR^d \to \RR^k\) such that for all \(u, v \in V\),
+\[(1-\epsilon)\norm{u-v}^2 \leq \norm{f(u) - f(g)}^2 \leq (1+\epsilon)\norm{u-v}^2\]
+Furthermore, this map can be found in randomized polynomial time.
+
+Proof: if \(k \geq d\) then the theorem is trivial.
+Suppose \(k < d\).
+Take a random \(k\)-dimensional subspace \(S\) and we let \(V_i'\) be the projection of \(V_i \in V\) into \(S\).
+Then setting \(L = \norm{V_i' - V_j'}^2\) and
+\[\mu = \frac{k}{d} \norm{V_i - V_j}\]
+\[\mathbb P[L \leq (1- \epsilon \mu)] = \mathbb P\sbr{\norm{V_i' - V_j'}^2 \leq (1 - \epsilon) \frac{k}{d}\norm{V_i - V_j}^2} \]
+
+Then by a lemma
+\[\exp\sbr{\frac{k}{2}\del{1 - (1 - \epsilon) + \ln (1 + \epsilon)}} \leq \exp\del{\frac{k}{2}\del{\epsilon - \del{1 + \epsilon\frac{\epsilon^2}{2}}}} = \exp\del{\frac{k\epsilon^2}{4}} \leq \exp\del{-2\ln n} =\frac{1}{n^2}\]
+
+\begin{align*}
+  k &\geq 4\del{\frac{\epsilon^2}{2} - \frac{\epsilon^3}{3}}^{-1}\ln n\\
+    &= 4(\epsilon^2)^{-1}\del{\frac{1}{2} - \frac{\epsilon}{3}}^{-1} \ln n\\
+  \frac{k\epsilon^2}{4} &\geq \del{\frac{1}{2} - \frac{\epsilon}{3}}^{-1} \ln n\\
+  -\frac{k \epsilon^2}{4} &\leq - \del{\frac{1}{2} - \frac{\epsilon}{3}}^{-1}\ln n\\
+    & \leq \del{\frac{-1}{2}}^{-1} \ln n\\
+  & \leq -2 \ln n
+\end{align*}
+
+\textbf{Lemma} let \(k \leq d\) then
+\begin{enumerate}
+\item If \(\beta < 1\) then
+  \[\mathbb P\del{L \leq \frac{\beta k}{d}} \leq \beta^{\sfrac{1}{2}}\del{1 + \frac{\del{1-\beta}^2}{d-k}}^{\frac{d-k}{2}} \leq \exp{\frac{k}{2}\del{1 - \beta + \ln \beta}}\]
+
+\item If \(\beta \geq 1\), then
+  \[\mathbb P \del{L \geq \frac{\beta k}{d}} \leq \beta^{\sfrac{1}{2}}\del{1 + \frac{\del{1-\beta}^2}{d-k}}^{\frac{d-k}{2}} \leq \exp{\frac{k}{2}\del{1 - \beta + \ln \beta}}\]
+
+  Proof: Markov inequality.
+\end{enumerate}
+Setting \(f(V_i) = \sqrt{\frac{d}{k}}V_i'\).
+Similarly \[\mathbb P[L \geq (1 + \epsilon)\mu] \leq \sfrac{1}{n^2} = \frac{\norm{V_i' - V_j'}{\frac{k}{d} \norm{V_i - V_j}}}.\]
+
+By above  calculations, for some fixed pair \(i, j\) the chance that the distribution
+\(\norm{f(V_i) - f(V_j)}/ \norm{V_i - V_j}\) does not line in the range \(\intcc{1 - \epsilon, 1 + \epsilon}\) is at most \(\sfrac{2}{n^2}\).
+
+Using the uniform bound, the chance that some pair of point suffers a large deviation is at most \(\binom{n}{s} \cdot \frac{2}{n^2} = \frac{n-1}{n} = 1-\frac{1}{n}\).
+
+Hence \(f\) has the desired properties w/ probability \(1 - (1 - \sfrac{1}{n}) = \sfrac{1}{n}\).
+
+Repeating this projection \(O(n)\) times can boost the success probability to the desired constant giving us the claimed randomized polynomial time algorithm, as desired.
+
+\section{Conner's Thesis}
+
+TBD
+% Recall the Shatten \(p\)-norm is defined as \(\norm{A}_p^p = \trace\del{A^p} = \sum \lambda_i^p\).
+
+% Algorithm 1: Compute \(\norm{A}_p\) using \(\sim\frac{4}{3}n^3\) floating point operations.
+% \(\Delta \leftarrow \mathop{\mathrm{diag}(\lambda_1, \dots, \lambda_n)}\) in \(\frac{4}{3}n^3\) flops.
+% Then \(A \leftarrow A^p\) using \(n(p-1)\) flops.
+% Then \(\norm{A}_p = (\trace{A})^{\sfrac{1}{p}}\) using \(n + 17\) flops.
+
+% Algorithm 2:
+\end{document}

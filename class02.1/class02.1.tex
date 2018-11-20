@@ -1,0 +1,432 @@
+%&myformat
+\documentclass{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{commath}
+\usepackage{xfrac}
+\usepackage{siunitx}
+\usepackage[parfill]{parskip}
+\usepackage[makeroom]{cancel}
+\usepackage{mathtools}
+\usepackage{tabu}
+\usepackage{bm}
+\usepackage[utf8]{inputenc}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{xcolor}
+\usepackage{mdframed}
+\usepackage{booktabs}
+\usepackage{tikz-cd}
+\usepackage{mathrsfs}
+\newcommand{\ihat}{\mathbf{\hat i}}
+\newcommand{\jhat}{\mathbf{\hat j}}
+\newcommand{\khat}{\mathbf{\hat k}}
+\newcommand{\rhat}{\mathbf{\hat r}}
+\newcommand{\thetahat}{\bm{\hat \theta}}
+
+\DeclareMathOperator{\trace}{tr}
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\range}{range}
+\DeclareMathOperator{\nullity}{nullity}
+\DeclareMathOperator{\proj}{proj}
+\DeclareMathOperator{\vspan}{span}
+\DeclareMathOperator{\curl}{curl}
+\DeclareMathOperator{\divergence}{div}
+\DeclareMathOperator{\hess}{H}
+\DeclarePairedDelimiter\ip{\langle }{\rangle}
+
+\newcommand{\m}[1]{\begin{bmatrix} #1 \end{bmatrix}}
+\newcommand{\sm}[1]{\left[\begin{smallmatrix} #1 \end{smallmatrix}\right]}
+\newcommand{\vm}[1]{\begin{vmatrix} #1 \end{vmatrix}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\NN}{\mathbb{N}}
+\newcommand{\QQ}{\mathbb{Q}}
+
+\setlength{\parskip}{\bigskipamount}
+
+\renewcommand{\labelenumi}{{\arabic{enumi}.}}
+\renewcommand{\labelenumii}{(\roman{enumii})}
+\renewcommand{\labelenumiii}{(\arabic{enumiii})}
+
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+
+\usepackage{xcolor}
+\definecolor{base03}{HTML}{002b36}
+\definecolor{base0}{HTML}{839496}
+\pagecolor{base03}
+\color{base0}
+
+\makeatletter
+\renewcommand*\env@matrix[1][*\c@MaxMatrixCols c]{%
+  \hskip -\arraycolsep
+  \let\@ifnextchar\new@ifnextchar
+  \array{#1}}
+\makeatother
+
+\usepackage{xparse}
+
+\ExplSyntaxOn
+    \NewDocumentEnvironment{aside} { o }
+     {\noindent\ignorespaces\\[0.5em]
+       \begin{mdframed}[nobreak=true,backgroundcolor=gray!10]
+         \IfNoValueTF{#1}{}{\textbf{#1}}
+     }
+     {
+     \end{mdframed}
+     }
+\ExplSyntaxOff
+
+\begin{document}
+
+\begin{center}
+  \Large Advanced Linear Algebra Week 2 Day 1
+  \normalsize
+
+  \textbf{2018/09/17} -- Jonathan Hayase, updated by Prof. Weiqing Gu
+\end{center}
+
+\[\sfrac{\mathcal{V}}{\mathbb{K}}\stackrel{f}{\to}\sfrac{\mathcal{W}}{\mathbb{K}}\]
+
+\(f\) is linear if:
+\begin{enumerate}[label=\roman*.]
+\item \(f(\bm v + \bm w) = f(\bm v) + f(\bm w)\)
+\item \(f(c \bm v) = cf\bm(v)\) for all \(c \in \mathbb{K}\).
+\end{enumerate}
+
+\underline{Key:} \(V^n\) is finite dimensional, with \(\set{\bm u_1, \dots, \bm u_n}\) basis of \(V^n\) and \(\set{\bm w_1, \dots, \bm w_m}\) is a basis of \(W^m\).
+\[\forall v \in V\implies v = a_1 \bm u_1 + \cdots + a_n \bm u_n\]
+\[L(\bm v) = a_1 L(\bm u_1) + \cdots + a_n L(\bm u_n)\]
+
+\[
+  \begin{cases}
+    L(\bm u_1) = \alpha_{11} \bm w_1 + \alpha_{21} \bm w_2\\
+    L(\bm u_2) = \alpha_{12} \bm w_1 + \alpha_{22} \bm w_2\\
+  \end{cases}
+\]
+
+\[(L(\bm u_1), L(\bm u_2)) = \del{\bm w_1, \bm w_2} \underbrace{\m{\alpha_{11} & \alpha_{12}\\\alpha_{21} & \alpha_{22}}}_{A}\]
+Where \(A\) is the matric representation of \(L\) w.r.t. bases \(\set{\bm u_1, \bm u_2}\) and \(\set{\bm w_1, \bm w_2}\)
+
+\begin{aside}[Recall:]
+  If we have \(B = P^{-1}AP\), then \(A\) and \(B\) have the same eigenvectors.
+  \[L \longleftrightarrow A\]
+  \[L:V^n \to V^n\]
+  \begin{center}
+    \begin{tabu}{ll}
+      \toprule
+      for finite \(n\) & for infinite dimensions\\
+      \midrule
+      If \(L\) is 1--1 then \(L\) is onto & does not hold\\
+      If \(L\) is onto then \(L\) is 1--1 & does not hold
+      If \(L\) is a bijection, then \(L\) is invertible & does not hold\footnote{homework!}\\
+      \bottomrule
+    \end{tabu}
+  \end{center}
+
+
+\end{aside}
+
+This may not hold in the infinite dimensional case!
+For example, consider:
+\[T\del{\del{x_1, x_2, \dots}} = \del{0, x_1, \dots}\]
+
+This is one to one, since the outputs uniquely determine the inputs, but the map is not onto since it does not cover any sequence not starting with \(0\).
+
+Similarly,
+\[T\del{\del{x_1, x_2, \dots}} = \del{x_2, x_3, \dots}\]
+
+\section{Eigenvalues and Eigenvectors}
+On \(V^n\) for finite \(n\).
+We seek \(L(\bm x) = \lambda \bm x\) for \(\bm x \neq 0\).
+Given a basis \(B\) we then write
+\[A\bm x = \lambda \bm x \implies A\bm x - \lambda \bm x = 0 \implies (A - \lambda I) = 0\]
+We want \(x \neq 0\) i.e. the homogenerous system must have onzero solution \(\Longleftrightarrow\) \(A-\lambda I\) is not invertible \(\Longleftrightarrow\) \( \det\del{A - \lambda I} = 0\).
+
+Solve the \(\lambda\)'s first, then plug back \(\del{A - \lambda I}\bm x = 0 \) and solve for \(\bm x\) to find eigenvectors.
+
+If \(V\) is on infinite dimensional vector space, say take
+\[(x_0, x_1 ,\dots) \stackrel{T}{\mapsto} (x_1, x_2, \dots)\]
+(\(T\) is called a \textit{linear operator}.)
+Then \(Tx = \lambda x\) yields
+\[\del{1, \lambda, \lambda^2, \dots, \lambda^n, \dots}\]
+or
+\[\del{\lambda, \lambda^2,\lambda^3, \dots, \lambda^{n+1}, \dots} = \lambda\del{1, \lambda, \lambda^2, \dots, \lambda^n, \dots}\]
+True for \(\forall \lambda \in R\), so \(T\) has uncountably many eigenvalues.
+
+\section{Spectrum of a bounded linear operator}
+If \(V\) is finite, \(L: V \to V\), then the spectrum of \(L\)  is the span of its eigenvectors.
+
+Definition: A operator number \(\lambda\) is said to be in the spectrum of a bounded linear operator \(T\) if \(\lambda I - T\) is not invertible.
+
+Spectrum Mapping Theorem
+\begin{center}
+  \begin{tikzcd}
+    A \ar[r]\ar[d] & a_2A^2 + a_1A + a_0I \ar[d] = q(A)\\
+    \lambda \ar[r]\ar[u] & a_2\lambda^2 + a_1\lambda + a_0 \ar[u]\\
+  \end{tikzcd}
+\end{center}
+\(M\) is an eigenvalue of \(q(A)\) iff \(\epsilon \lambda\) (an eigenvalue of \(A\)) such that \(M = q(\lambda)\)
+
+Remark: \(A\) and \(q(A)\) share the same set of eigenvalues.
+
+\section{Cayley-Hamilton Theorem}
+Every matrix satisfies its own characteristic polynomial, so \(P_A(A) = 0\).
+
+You may think: \(P_A(\lambda) = \det\del{A -  \lambda I} = 0\). Then \(P_A(A) = \det\del{A - AI} = 0\).
+But this doesn't really make sense, since we can't subtract \(A\) from a scalar!
+
+Actual proof:
+\begin{align*}
+  P_A(\lambda) &= \lambda^n - \underbrace{(a_{11} + a_{22} + \cdots +a_{nn})}_{a_{n-1}} \lambda^{n-1} + \cdots + \underbrace{(-1)^n\det A}_{a_0}\\
+  &= \lambda^n +a_{n-1}\lambda^{n-1} + \cots + a_1 \lambda + a_0
+\end{align*}
+
+e.g.
+\begin{align*}
+  P_A(\lambda) &= \m{a_{1} - \lambda & a_{12}\\ a_{21} & a_{22} - \lambda} \\
+              &= \del{a_{11} - \lambda}\del{a_{22} - \lambda} - a_{21}a_{22}\\
+                &= \lambda^2 - \underbrace{\del{a_{11} + a_{22}}}_{\trace A} + \underbrace{a_{11} a_{22} - a_{12}a_{21} }_{\det A}
+\end{align*}
+
+\begin{align*}
+  P_A(\lambda) &= \det\del{\lambda I - A}\\
+  \text{let \(\lambda = 0\)} & \implies \det{-A} = (-1)^n \det A
+\end{align*}
+
+\[\det \vm{a_{11} & a_{12} & a_{13}\\ a_{21}  & a_{22} & a_{23}\\ a_{31} & a_{32} & a_{33}} = \del{-1}^{\del{1 + 1}} a_{11} \vm{a_{22} & a_{23}\\ a_{32} & a_{33}} + \del{-1}^{\del{1+2}}a_{12}\vm{a_{21} & a_{23}\\ a_{31} & a_{33}} + a_{13}\vm{a_{21} & a_{22}\\ a_{31} & a_{32}}\]
+Consider the adjoin of \(A\)
+\[\m{c_{11} & c_{12} & \cdots\\c_{21} & \ddots & \ddots\\  \vdots & \ddots & \ddots}.\]
+Since each every of \(B(A)\) is cofactor of \(\Lambda I - A\), thus the degree is \(\leq n-1\).
+Let's write \(B(\lambda) = \lambda^{n-1}B_0 + \lambda^{n-2}B_1 + \cdots + \lambda B_{n-2} + B_{n-1}\) where \(B_i\) are scalar matrices.
+
+(adjoint \(M\)) \(M = \del{\det M} I\), where \(M\) an \(n \times n\) matrix.
+In our case,\(B(\lambda)(\lambda I - A) = \det \del{\lambda I - A} I\).
+\[\mathrm{RHS} = \del{\lambda^n + a_n \lambda^{n-1} + a_{n-1}\lambda^{n-2} + \cdots + a_1 \lambda + a_0}I\]
+\begin{align*}
+  \mathrm{LHS} &= \del{\lambda^{n-1}B_0 + \lambda^{n-2}B_1 + \lambda^{n03}B_2 + \cdots + \lambda^2 B_{n-2} + \lambda B_{n-1}}\\
+               &= \lambda^n B_0 + \lambda^{n-1} B_1 + \lambda^{n-2}B_2 + \cdots + \lambda^2 B_{n-2} + \lambda B_{n-1}\\
+  &\phantom{=} - \lambda^{n-1} B_0 A - \lambda^{n-2}B_a A - \cdots - \lambda^{2}B_{n-3}A - B_{n-1}A.
+\end{align*}
+Compare the left and right hand sides, we have
+\begin{align*}
+  B_0 &= I\\
+  B_1 - B_0A &= a_1 I\\
+  B_2 - B_1 A &= a_2 I\\
+     &\vdots\\
+  B_{n-2} - B_{n-3}A &= a_{n-2}I\\
+  B_{n-1} - B_{n-2}A&= a_{n-1}I\\
+  -B_{n-1}A &= a_n
+\end{align*}
+
+We can then multiply the first row by powers of \(A\), yielding
+\begin{align*}
+  \cancel{B_0 A^n}&= IA^n\\
+  \cancel{B_1A^{n-1}} \cancel{- B_0A^n} &= a_1 IA^{n-1}\\
+  \cancel{B_2A^{n-2}} - \cancel{B_1 A^{n-1}} &= a_2 IA^{n-2}\\
+      &\vdots\\
+  \cancel{B_{n-2}A^2} - \cancel{B_{n-3}A^3} &= a_{n-2}IA^2\\
+  \cancel{B_{n-1}A} - \cancel{B_{n-2}A^2}&= a_{n-1}IA\\
+  \cancel{-B_{n-1}A} &= a_n
+\end{align*}
+Thus, adding yields
+\[ 0 = P_A(A)\]
+As desired!
+
+\section{Unitary Matrix}
+Definition a matrix \(A \in M_n\)  is called \textit{unitary} if \(UU^* = I = U^*U\).
+We have \(U^* \triangleq U^T\) if \(U\) is real, and then \(U\) is called \textit{orthogonal}.
+
+Properties: \(U\) is invertible (\(U^{-1} = U^*\)) and \(\abs{\det U} = 1\).
+
+Key theorem: \(U\) is unitary \(\Longleftrightarrow\) \(\norm{U\bm x} = \norm{\bm x}\) \(\Longleftrightarrow\) There exists orthonormal system \(\set{U_1, \dots, U_n}\) such that \(\ip{U_i, U_j} = \delta_{ij}\).
+
+\section{Schur's Theorem}
+Given \(A \in M_n\del{\CC}\) with eigenvalues \(\lambda_1, \dots, \lambda_n\), which could be complex, counting multiplicities then, there exists a unitary matrix \(U \in M_n\del{\CC}\) such that
+\[A = U \m{\lambda_1 & x & \cdots & x\\0&\lambda_2 & \ddots & \vdots \\ \vdots&\ddots& \ddots  & x\\ 0&\cdots&0&\lambda_n } U^*\]
+
+Proof by induction: \(n = 1\) true.
+Now, suppose for \(n-1 \times n-1\) matrix \(\tilde{A}\), there exists unitary \(\tilde{W}\)  s.t.
+\[\tilde{W}^*A\tilde{W} = \m{\lambda_2 & x & \cdots & x\\0&\lambda_2 & \ddots & \vdots \\ \vdots&\ddots& \ddots  & x\\ 0&\cdots&0&\lambda_n } \]
+Now, for \(n \times n\) matrix \(A\), let \(\lambda_1, \dots , \lambda_n\) are eigenvalues with \(\bm v_1\) corresponding to \(\lambda_1\).
+
+Extend \(v_1 \neq 0\) into an orthonormal basis \(\set{\bm v_1, \dots, \bm v_n}\).
+\begin{align*}
+  A \bm v_1 &= \lambda_1 \bm v_1\\
+  A \bm v_2 &= b_{11} \bm v_1 + b_{12}\bm v_2 + \cdots + b_{1n} \bm v_n\\
+  & \vdots
+\end{align*}
+
+\[\del{A \bm v_1 , \dots, A \bm v_n} = (v_1, \dots, v_n)
+  \left[  \begin{tabu}{c|ccc}
+        \lambda_1 & x & \cdots & x\\\hline
+        0 &\\
+        \vdots & & \tilde{A}\\
+        0
+  \end{tabu}\right]
+\]
+Therefore,
+\[A = V\left[  \begin{tabu}{c|ccc}
+        \lambda_1 & x & \cdots & x\\\hline
+        0 &\\
+        \vdots & & \tilde{A}\\
+        0
+  \end{tabu}\right]V^{-1}\]
+
+Let
+\[w = \left[  \begin{tabu}{c|ccc}
+        1 & x & \cdots & x\\\hline
+        0 &\\
+        \vdots & & \tilde{W}\\
+        0
+  \end{tabu}\right]\]
+then
+\[W^*W = \left[  \begin{tabu}{c|ccc}
+        1 & x & \cdots & x\\\hline
+        0 &\\
+        \vdots & & \tilde{W}^*\\
+        0
+  \end{tabu}\right] \left[  \begin{tabu}{c|ccc}
+        1 & x & \cdots & x\\\hline
+        0 &\\
+        \vdots & & \tilde{W}\\
+        0
+  \end{tabu}\right] = \left[  \begin{tabu}{c|ccc}
+        1 & x & \cdots & x\\\hline
+        0 &\\
+        \vdots & & \tilde{W}^*\tilde{W}\\
+        0
+  \end{tabu}\right] = \left[  \begin{tabu}{c|ccc}
+        1 & x & \cdots & x\\\hline
+        0 &\\
+        \vdots & & I_{n-1}\\
+        0
+      \end{tabu}\right] = I_n\]
+
+\begin{align*}
+  W^*AW &= \left[  \begin{tabu}{c|ccc}
+        1 & x & \cdots & x\\\hline
+        0 &\\
+        \vdots & & \tilde{W}^*\\
+        0
+  \end{tabu}\right] \left[  \begin{tabu}{c|ccc}
+        \lambda_1 & x & \cdots & x\\\hline
+        0 &\\
+        \vdots & & \tilde{A}\\
+        0
+  \end{tabu}\right] \left[  \begin{tabu}{c|ccc}
+        1 & x & \cdots & x\\\hline
+        0 &\\
+        \vdots & & \tilde{W}\\
+        0
+  \end{tabu}\right]\\
+  &= \left[  \begin{tabu}{c|ccc}
+        \lambda_1 & x & \cdots & x\\\hline
+        0 &\\
+        \vdots & & \tilde{W}\\
+        0
+  \end{tabu}\right] \left[  \begin{tabu}{c|ccc}
+        1 & x & \cdots & x\\\hline
+        0 &\\
+        \vdots & & A\tilde{W}\\
+        0
+      \end{tabu}\right]\\
+  &=
+     \left[  \begin{tabu}{c|ccc}
+      \lambda_1 & x & \cdots & x\\\hline
+      0 &\\
+      \vdots & & \tilde{W}^*A\tilde{W}\\
+      0
+    \end{tabu}\right]\\
+  &=
+  \left[  \begin{tabu}{c|ccc}
+        \lambda_1 & x & \cdots & x\\\hline
+        0 & \lambda_2\\
+        \vdots & & \ddots\\
+        0 &&& \lambda_n
+      \end{tabu}\right]\\
+\end{align*}
+
+So what?
+
+Theorem: Given \(A \in M_n(\CC)\) and \(\epsilon> 0\), there exists a diagonalizable matrix \(\tilde{A} \in M_n\del{\CC}\) s.t.
+\[\sum_{1 \leq i, j \leq n} \abs{a_{ij} - \tilde{a}_{ij}}^2 < \epsilon\]
+Can be used to derive the Jordan Canonical form.
+
+
+\section{Dual Space}
+
+The dual space of \(\mathcal{V}\) is the space of linear functionals.
+\[f: \sfrac{W}{\mathbb{F}} \stackrel{\ell}{\to} \mathbb{F}\]
+\(\ell \to T\) also linear.
+Conside the set of \(\ell : W \to \mathbb{F}\).
+\(L(W, \mathbb{F})\) is called the dual space of \(W\), denoted by \(W^*\).
+
+\subsection{Basis Theorem}
+\[\dim W^* = \dim W\]
+
+Proof: method 1: \(L(W, B) \cong \set{A_{m \times n}} \cong M_{\mathbb{F}}(n, m)\).
+In our case, \(M_{\mathbb{F}}(n, 1)\).
+\[\dim M_\mathbb{F}(n, 1) = n\]
+
+Method 2: Recall \(\set{\bm u_1, \dots, \bm u_n}\) orthonormal, then
+\[v = a_1 \bm u_1 + \cdots a_n \bm u_n\]
+With \(a_i = \bm v \cdot \bm u_i\).
+We want to construct a basis for \(W^*\) which contains \(n\) basis vectors \(\set{\ell_1, \dots,  \ell_n}\).
+
+\[\begin{tabu}{cccc}\\
+    \ell_1(\bm v_1) = 1 & \ell_2(\bm v_1) = 0 &\cdots &\ell_n(\bm v_1) = 0 \\
+    \ell_1(\bm v_2) = 0 & \ell_2(\bm v_2) = 1 &\cdots &\ell_n(\bm v_2) = 0 \\
+    \vdots & \cdots & \ddots & \vdots\\
+    \ell_1(\bm v_n) = 0 & \ell_2(\bm v_n) = 0 &\cdots &\ell_n(\bm v_n) = 1 \\
+\end{tabu}\]
+
+Here \(\set{\bm v_1, \dots, \bm v_n}\) basis of \(W\).
+
+Let's prove \(\set{\ell_1, \dots, \ell_n}\) are linearly independent.
+
+Form \(a_1 \ell_1 + \cdots + a_n \ell_n = 0\) w.t.s \(a_1 = \cdots = a_n = 0\).
+\[\del{a_1 \ell_1 + \cdots + a_i\ell_i + \cdots + a_n \ell_n}\bm v_i = 0(\bm v_i)\]
+\[\implies a_1 \cancelto{0}{\ell(\bm v_1)} + \cdots + a_i \cancelto{1}{\ell_i(\bm v_i)} + \cdots + a_n \cancelto{0}{\ell_n(\bm v_i)} = 0\]
+(from method 1, \(\dim W^* = n\)).
+Thus, \(\set{\ell_1, \dots, \ell_n}\) forms a basis of \(W^*\).
+
+\section{Double Dual}
+
+Let \(\sfrac{V}{\mathbb{K}}\).
+Let's consider the dual space of \(V^*\) dual of \(W\).
+What is \(V^*^*\)\footnote{or \(\del{V'}'\)}, the double dual!
+\[V'' = L(V', \mathbb{K})\]
+Theorem: \(V'' \cong V\) i.e. the two are naturally isomorphic.
+
+Proof:
+\[V \to V''\]
+\[\phi: x \mapsto L_x \m{L_x : v' \to \mathbb{K}\\L_x(\ell) = \ell(x)\\\del{\ell: V \to \mathbb{K}}}\]
+Want to show:
+\begin{enumerate}
+\item \(\phi\) is bijection (1--1 and onto)
+\item \(\phi\) preserves linear structure (i.e. \(\phi(cx + y) = c\phi(x) + \phi(y)\))
+\end{enumerate}
+
+Let's show 2 first:
+\[\phi(cx + y)(\ell) = L_{cx+y}(\ell) = \ell(cx + y) = c\ell(x) + \ell(y) = cL_x(\ell) + L_y(\ell) = c\phi(x) + \phi(y)\]
+
+
+Now let's show 1.
+Note that \(\dim V'' = \dim V' = \dim V\).
+So all we need is to show is that \(\phi\) is 1-to-1, so \(\ker \phi = \set{0}\).
+Suppose \(\phi(x) = 0\), want to show \(x = 0\).
+\[\phi_x = L_x = 0, L_x(\ell) = \ell(x) = 0\]
+for all \(\ell \in V' \implies x = 0\).
+Thus, \(\phi\) is an isomorphism, so \(V'' \cong V\).
+
+e.g. start from inner product
+\[\ip{\underbrace{v_0}_{\text{fix}}, w} = \ell(w)\]
+
+\end{document}

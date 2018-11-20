@@ -1,0 +1,331 @@
+%&myformat
+\documentclass{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{commath}
+\usepackage{xfrac}
+\usepackage{siunitx}
+\usepackage[parfill]{parskip}
+\usepackage[makeroom]{cancel}
+\usepackage{mathtools}
+\usepackage{tabu}
+\usepackage{bm}
+\usepackage[utf8]{inputenc}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{mdframed}
+\usepackage{booktabs}
+\usepackage{tikz-cd}
+% \usepackage{physics}
+\usepackage{mathrsfs}
+\newcommand{\ihat}{\mathbf{\hat i}}
+\newcommand{\jhat}{\mathbf{\hat j}}
+\newcommand{\khat}{\mathbf{\hat k}}
+\newcommand{\rhat}{\mathbf{\hat r}}
+\newcommand{\thetahat}{\bm{\hat \theta}}
+
+\DeclareMathOperator{\trace}{tr}
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\range}{range}
+\DeclareMathOperator{\nullity}{nullity}
+\DeclareMathOperator{\proj}{proj}
+\DeclareMathOperator{\vspan}{span}
+\DeclareMathOperator{\curl}{curl}
+\DeclareMathOperator{\divergence}{div}
+\DeclareMathOperator{\hess}{H}
+\DeclarePairedDelimiter\ip{\langle }{\rangle}
+
+\newcommand{\m}[1]{\begin{bmatrix} #1 \end{bmatrix}}
+\newcommand{\sm}[1]{\left[\begin{smallmatrix} #1 \end{smallmatrix}\right]}
+\newcommand{\vm}[1]{\begin{vmatrix} #1 \end{vmatrix}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\NN}{\mathbb{N}}
+\newcommand{\QQ}{\mathbb{Q}}
+
+\setlength{\parskip}{\bigskipamount}
+
+\renewcommand{\labelenumi}{{\arabic{enumi}.}}
+\renewcommand{\labelenumii}{(\roman{enumii})}
+\renewcommand{\labelenumiii}{(\arabic{enumiii})}
+
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+
+% \usepackage{xcolor}
+% \definecolor{base03}{HTML}{002b36}
+% \definecolor{base0}{HTML}{839496}
+% \pagecolor{base03}
+% \color{base0}
+
+\pgfplotsset{compat=1.15}
+
+\makeatletter
+\renewcommand*\env@matrix[1][*\c@MaxMatrixCols c]{%
+  \hskip -\arraycolsep
+  \let\@ifnextchar\new@ifnextchar
+  \array{#1}}
+\makeatother
+
+\usepackage{xparse}
+
+\ExplSyntaxOn
+    \NewDocumentEnvironment{aside} { o }
+     {\noindent\ignorespaces\\[0.5em]
+       \begin{mdframed}[nobreak=true,backgroundcolor=gray!10]
+         \IfNoValueTF{#1}{}{\textbf{#1}}
+     }
+     {
+     \end{mdframed}
+     }
+\ExplSyntaxOff
+
+\begin{document}
+
+\begin{center}
+  \Large Advanced Linear Algebra Week 3 Day 1
+  \normalsize
+
+  \textbf{2018/09/24} -- Jonathan Hayase, updated by Prof. Weiqing Gu
+\end{center}
+
+\section{Schur's Theorem}
+\subsection{Statement}
+Given \(A \in M_n\) and \(\epsilon > 0\) , then there exists a diagonal matrix \(\tilde{A} \in M_n\) such that
+\[\sum_{1 \leq i, j \leq n} \abs{a_{ij} - \tilde{a}_{ij}}^2 < \epsilon\]
+
+\subsection{Proof}
+By Schur's Theorem, we have
+\[A = U\m{\lambda_1 &x&\cdots&x &\\&\lambda_2&\ddots& \vdots \\& &\ddots &x\\&&&\lambda_n}U^*\]
+Key \(\tilde{\lambda}_i = \lambda_i + \) \(i, j \in 1, 2, \dots, n\)
+
+\[\tilde A = U\m{\lambda_1 &x&\cdots&x &\\&\lambda_2&\ddots& \vdots \\& &\ddots &x\\&&&\lambda_n}U^*\]
+
+\begin{align*}
+  \trace \del{\del{A - \tilde A}^T\del{A - \tilde A}}
+  &= \trace\del{U^*\m{\lambda_1 &x&\cdots&x &\\&\lambda_2&\ddots& \vdots \\& &\ddots &x\\&&&\lambda_n}UU^*\m{\lambda_1 &x&\cdots&x &\\&\lambda_2&\ddots& \vdots \\& &\ddots &x\\&&&\lambda_n}U}\\
+  &= \sum\abs{\lambda - \lambda}^2 = \sum i^2\eta^2 < \epsilon
+\end{align*}
+Let \(\eta^2 = \frac{\epsilon}{\sum_{1 \leq i \leq n} i^2}\)
+We made \(\tilde A\) diagonalizable since every eigenvalue is distinct.
+\footnote{Sorry this was kind of a mess. I definitely missed some things.}
+
+\section{Euclidean Structure}
+We have \(\del{V/\mathbb{F}\;\ip{\cdot,\cdot}}\)
+Where
+\[\ip{\cdot, \cdot}: V \times V \to \mathbb{F}\]
+\begin{enumerate}
+\item Linear on the first fact
+\item Conjugate symmetry \(\ip{x, y} = \overline{\ip{y, x}}\)
+\item \(\ip{v, v} \geq 0\) and \(=0\) iff \(v = 0\)
+\end{enumerate}
+Two key facts:
+\begin{enumerate}
+\item Cauchy-Schwarz inequality
+\item There exist an orthonormal basis
+\end{enumerate}
+
+A Euclidean space is also called an inner product space.
+
+\subsection{Hilbert space}
+
+Definition: An inner product space \(X\) is called a Hilbert space if every Cauchy sequence converges to a vector.
+\begin{aside}[Definition:]
+  \(\set{x_n}\) is called a Cauchy sequence if for all \(\epsilon > 0\), there exists an \(N\) such that whenever we have \(m, n > N\), we also have \(\norm{x_m - x_n} < \epsilon\).
+\end{aside}
+
+Normal linear operator/map.
+
+Let \(\ell(X) = \set{T: X \to X\text{ linear map}}\) where \(\dim X = n\).
+
+Q: Is it possible to give a norm to this \(T\)?
+
+Let \(\set{\bm  x_1, \dots, \bm x_n}\) be an orthonormal basis.
+
+Then for all \(x \in X\), \(x = \sum a_i x_i\).
+\begin{align*}
+  \norm{\mathop{T}x} = \norm{\sum a_i \mathop{T}x_i}
+  &\leq\sum{\abs{a_i}\norm{\mathop T x_i}}\\
+  &\leq M\sum\abs{a_i} &&  \text{let \(m = \max_i \norm{\mathop T x_i} \)}\\
+  &\leq M\sum \sqrt{\abs{a_i}^2}\sqrt{n}&& \text{Cauchy-Schwarz inequality}\\
+  &=M\norm{x}\sqrt{n}
+\end{align*}
+Thus, we have
+\begin{align*}
+  \frac{\norm{\mathop T x}}{\norm x} &\leq M\\
+  \norm{\mathop T \frac{x}{\norm{x}}} &\leq M
+\end{align*}
+Let \(u = \frac{x}{\norm{x} \in S^{n-1}}\).
+Then \(\norm{\mathop T u} \leq M\), so there exist a max on compact set \(S^2\).
+
+Definition: \(\norm{T} = \max \set{\norm{\mathop T u}m \mid \norm{u} = 1}\).
+
+In general,
+\[\norm{T} = \sup_{u} \set{\norm{\mathop T u}m \mid \norm{u} = 1}.\]
+
+\section{Riesz Representation Theorem}
+Q: What does \(X^*\) (\(= X'\)) look like if we put Euclidean structure on \(X/\mathbb{F}\)?
+Let \(\set{x_1, \dots, x_n}\) be an orthonormal basis.
+Then, for any \(x\), we can write \(x = a_1 x_1 + \cdots + a_n x_n = \ip{x, x_1}x_1 + \cdots + \ip{x, x_n}x_n\).\footnote{\(\ip{\cdot, \cdot}\) is an inner product}
+Let \(\ell \in X^*\) if \(x = k_1x_1 + \cdots + k_n x_n\).
+Then
+\[\ell(x) = k_1\underbrace{\ell(x_1)}_{a_1} + \cdots k_n\underbrace{\ell(x_n)}_{a_n} = a_1\ip{x, x_1} + a_n \ip{x, x_n} = \ip{x, \overline a_1x_1 + \cdots \overline a_n x_n}.\]
+Now, let \(y = \overline a_1x_1 + \cdots \overline a_n x_n\), then \(\ell(x) = \ip{x, y}\).
+\begin{aside}[Recall:]
+  \(X^{**} = X\).
+  Fix \(x\) to \(x_0\), so then we have \(\ip{x_0, y}\).
+  \[\ell_{x_0} = \ip{x_0, y}\]
+
+  Life analogy: Goats eat cabbages and spit out numbers.
+  Goats are linear functionals and cabbages are vectors.
+  In life we know that cabbages are passive, but suppose a cabbage gets angry and wants to eat a goat!
+  The cabbage becomes a poison cabbage and kills the goats! (And the number the cabbage returns is how sick the Goat gets.)
+  This is the idea of duality.
+\end{aside}
+
+% \begin{aside}[Quantum]
+%   The problem with quantum physics is its notation.
+%   Consider the following:
+%   \[\ket{u}\underbrace{\bra{u}\del{\ket{x}}}_{\proj_u x} = \bra{u}\ket{x}\ket{u}\]
+% \end{aside}
+
+Riesz Representation Theorem: For \(\ell \in X'\), there exists a unique \(y \in X\) such that \(\ell(x) = \ip{x, y}\).
+
+Suppose we have \(\mathbb{B} = \set{v_1, \dots, v_n}\) a basis of \(V\).
+Then we have \(\mathbb{B}^* = \set{\ell_1, \dots, \ell_n}\) dual basis of \(\mathbb{B}\).
+\[\ell_i(v_j) = \delta{ij}\]
+
+Now \(V\) has an inner product, there exists an orthonormal basis \(\set{u_1, \dots, u_n}\) now, \(\set{\ell_1, \ell_n} = \set{u_1, \dots, u_n}\).
+\[u_i(u_j) = \delta_{ij}\implies \dif x_1 \del{\dpd{}{x_j}} = \delta_{ij}\]
+\begin{aside}[Recall:]
+  \[\curl \bm F = \vm{\hat{u} & \hat{j} & \hat{k}\\\pd{}{x} & \pd{}{y} & \pd{}{z}\\ F_1& F_2 & F_3} = V \times \bm F\]
+
+  Similarly, the curl is represented by
+  \[\sum b_1 \dpd{}{x_i}\]
+\end{aside}
+\section{Self-adjoint Map}
+Definition \(T: X \to X\) is called a self-adjoint map if \(T^* = T\).
+That is, \(\ip{x, \mathop T x} = \ip{\mathop T x, x}\) for all \(x \in X\).
+
+Let \(M\) be a matrix representation of \(T\) with respect to some basis \(\mathbb{B}\).
+For complex \(n \times n\) matrix, \(M\) is self-adjoint if \(M^* = \overline{M}^T = M\).
+\(M\) is also called Hermitian.
+If \(M\) is real, then \(M^T = M\).
+
+\section{Adjoints of Transforms}
+
+Q: What is exactly \(T^*\) (or \(T'\))?
+
+Adjoint of a linear map.
+Let \(X\) be an inner product space.
+Recall: For any \(x\), \(\ell(x) = \ip{x, y}\) so \(\ell \leftrightarrow y\).
+So we identify \(X' \cong X\).
+Consider a linear transform \(T: X \to X\).
+
+The dual of \(T\) is defined as \(X' \to X'\) we know that \(\ell: X \to \mathbb{F}\).
+If \(X \stackrel{T}{\to} X \stackrel{\ell}{\to} \mathbb{F}\), then we can define \(\ell \circ T \triangleq T'\).
+\begin{center}
+  \begin{tikzcd}
+    \ell \ar[r, "\in"] \ar[d]& X' \ar[r, "T'"]\ar[d, "\cong"] & X'\ar[d, "\cong"]\\
+    x \ar[r, "\in"] \ar[u]&X \ar[r, "T^*"]& X
+  \end{tikzcd}
+  \footnote{Having some trouble here w/ the diagram}
+\end{center}
+
+Define \(T'\) to be \(\ell \circ T\).\footnote{can't read}
+
+\(X \cong X'\).
+We know there exists a \(y\) corresponding to \(\ell\), \(\ell \leftrightarrow y\).
+Definition: \(T^*: X \to X\) where \(y \mapsto z_y\) is called the adjoint of \(T\).
+
+Claim: \(T^*\) is a linear map \(X\to X\) and \(\ip{\mathop T, y} = \ip{x, \mathop T^* y}\) for all \(x, y \in X\).
+\(T^*\) is called the adjoint of \(T\).
+
+To get a more concrete feeling for the adjoint, let's take a look at its matrix representation.
+
+Let \(\set{x_1, \dots, x_n}\) be an orthonormal basis of \(X\).
+What is \(\mathop T x_j = \sum_{i=1}^n m_{ij} x_i\) so we have \(T \leftrightarrow \del{m_{ij}} = M\).
+Then \(\mathop T^* x_j = \sum_{i=1}^n n_{ij} x_i\) so \(T^* \leftrightarrow n_{ij} = N\).
+
+Are are \(M\) and \(N\) related?
+Because we have an orthonormal basis, \(\ip{\mathop T x_j, x_i} = m_{ij} = \ip{x_j, \mathop T^* x_i}\) and \(\ip{T^* x_j, x_i} = n_{ij}  = \overline{\ip{x_i, \mathop T^* x_j}} = \overline{m_{ij}}\)
+Thus, \(n_{ij} = \overline{m_{ij}}\).
+So \(N = \overline{\del{M^T}} = M^*\).
+
+Definition: \(M^*\) is called the conjugate transpose of \(M\).
+Thus, \(T \leftrightarrow M\) and \(T^* \leftrightarrow M^*\).
+
+Theorem: Let \(X\) be a complex inner product space and let \(T\) be self-adjoint (that is, \(T^* = T\)).
+This means \(\ip{\mathop T x, y} = \ip{x, \mathop T y}\).
+\(T\) has real eigenvalues and a set of eigenvectors that form an orthonormal basis for \(X\).
+
+Proof: Suppose \(a + bi\) is an eigenvalue of \(T\).
+Then there exists \(x \neq 0\) such that \(\mathop T x = \del{a + bi}x\).
+We want to show that \(b = 0\).
+Then consider \(\del{\mathop T - aI}x = ibx\).
+Now \(\del{T - aI}^* = T^* - aI^* = T - aI\), so \(T - aI\) is also self-adjoint.
+\[\ip{\del{T - aI}x, x} = \ip{x, \del{T - aI}x} = \ip{x, ibx} = \overline{ib}\ip{x, x} = -ib\norm{x}^2\]
+But we also have
+\[\ip{\del{T - aI}x, x} = \ip{ibx, x} = ib\ip{x, x} = ib\norm{x}^2\]
+
+Then we have \(?ib\norm{x^2} = 0\).
+If \(x\neq 0\), then we must have \(b = 0\).
+
+Now, show ``eigenvectors leading to distinct eigenvalues are orthogonal.''
+Proof: Say \(\mathop T x = \lambda_i x_i\) with \(\lambda_i \in \mathbb{R}\) and \(x \neq 0\).
+\(\mathop T y = \lambda_j y_j\) for \(\lambda_j \in \mathbb{R}\) \(y \neq 0\).
+
+Suppose \(T\) is self-adjoint.
+\[\ip{\mathop T x, y} = \ip{\lambda_i x, y} = \lambda_i \ip{x, y}\]
+\[\ip{x, \mathop T y} = \ip{ x, \lambda_jy} = \lambda_j \ip{x, y}\]
+
+In each eigenspace using Gram-Schmidt\footnote{spelling?} to get an orthonormal set.
+Then, putting them all together gives us an orthonormal space.
+
+Theorem: Let \(M\) be a real self-adjoint matrix. (e.g. the Hessian matrix \(\mathop{\mathrm H} = \nabla^2 f\)).
+Then there exists an orthonormal matrix \(P\) such that.
+\(P^*MP = D\) where \(D\) is a diagonal matrix and \(P^* = P^{-1} = P^T\).
+Suppose we have \(Mx = ax\).
+Then \(x = \Re(x) + i \Im{x}\), so \(M\del{\Re(x) + i\Im(x)} = a\Re(x) + ia\Im(x)\).
+So \(M\del{\Re{x}} = a\Re{x}\).
+
+\footnote{Missed some things here.}
+\section{Spectral resolution of a self-adjoint map}
+Let \(T: X \to X\) a self-adjoint map.
+Now, let \(\lambda_1 \leftrightarrow N_1, \dots, \lambda_k \leftrightarrow N_k\) be the distinct eigenvalues of \(T\), each corresponding to an eigenspace.
+Then
+\[X = N_1 \oplus \cdots \oplus N_k\]
+Then for all \(x \in X\), \(x = x^{\del{1}} + \cdots + x^{\del{k}} \in N_i\).
+\begin{enumerate}
+\item For \(i = 1, 2, \dots, k\) define projection \(P_i : X \to X\).
+  \[Id = \sum_{i=1}^kP_i\]
+  This is called the identity resolution.
+
+\item \(P_i^2(x) = P_i(x^{\del{i}}) = x^{\del{i}} = P^{\del{i}}\del{x}\)
+\item \(P_iP_j(x) = P_i\del{x^{\del{j}}} = 0\) for all \(x\).
+  So \(P_iP_j = 0\).
+\item \(\ip{x, p_j, y} = \ip{\sum_{i = 1}^k P_i(x), P_j(y)} = \sum_{i=1}^k\underbrace{\ip{P_i(x), P_j(x)}}_{0}  = \ip{P_j(x) , P_i(x)}\)
+  Want to show that \(P_j\) is self-adjoint.
+  But also \(\ip{P_j)x_, y} = \sum){i = 1}^k \ip{P_j\del{x}, P_i\del{y}}\).
+  Thus,
+  \[\ip{P_j(x), y} = \ip{x, P_j(y)}\]
+  So \(P_j\) is self-adjoint.
+  \[\mathop T x = T\del{\sum_{i=1}^k P_i(x)} = \sum_{i=1}^k T(P_i(x)) = \sum_{i=1}^k T(x^{\del i}) = \sum_{i=1}^k \lambda_i \lambda^{\del i} = \sum_{i=1}^k \lambda_iP_i(x)\]
+\end{enumerate}
+for all \(x \in X\).
+Thus
+\[T = \sum_{i=1}^k\lambda_i P_i\]
+Called the spectral resolution of \(T\).
+
+Every eigenvalue deal with transformations for ???? large data?\footnote{rip}.
+
+So what?
+\[T^n = \sum_{i=1}^k\lambda^n P_i \]
+\[e^{sT} = \sum_{u=1}^\infty\frac{s^nT^n}{n!} = \sum_{n=1}^\infty \frac{s^n}{n!}\sum{\lambda^iP_i}
+  \footnote{rip}
+\end{document}

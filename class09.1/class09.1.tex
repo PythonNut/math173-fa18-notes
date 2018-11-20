@@ -1,0 +1,195 @@
+%&myformat
+\documentclass{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{commath}
+\usepackage{dsfont}
+\usepackage{xfrac}
+\usepackage{siunitx}
+\usepackage[parfill]{parskip}
+\usepackage[makeroom]{cancel}
+\usepackage{mathtools}
+\usepackage{tabu}
+\usepackage{bm}
+\usepackage[utf8]{inputenc}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{mdframed}
+\usepackage{booktabs}
+\usepackage{tikz-cd}
+\usepackage{centernot}
+% \usepackage{CJKutf8}
+% \AtBeginDvi{\input{zhwinfonts}}
+% \usepackage{ctex}
+\usepackage{xeCJK}
+\setCJKmainfont{Source Han Sans}
+% \usepackage{physics}
+\usepackage{mathrsfs}
+\newcommand{\ihat}{\mathbf{\hat i}}
+\newcommand{\jhat}{\mathbf{\hat j}}
+\newcommand{\khat}{\mathbf{\hat k}}
+\newcommand{\rhat}{\mathbf{\hat r}}
+\newcommand{\thetahat}{\bm{\hat \theta}}
+
+\DeclareMathOperator{\trace}{tr}
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\range}{range}
+\DeclareMathOperator{\nullity}{nullity}
+\DeclareMathOperator{\proj}{proj}
+\DeclareMathOperator{\vspan}{span}
+\DeclareMathOperator{\curl}{curl}
+\DeclareMathOperator{\divergence}{div}
+\DeclareMathOperator{\hess}{H}
+\DeclarePairedDelimiter\ip{\langle }{\rangle}
+
+\renewcommand{\m}[1]{\begin{bmatrix} #1 \end{bmatrix}}
+\newcommand{\sm}[1]{\left[\begin{smallmatrix} #1 \end{smallmatrix}\right]}
+\newcommand{\vm}[1]{\begin{vmatrix} #1 \end{vmatrix}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\NN}{\mathbb{N}}
+\newcommand{\QQ}{\mathbb{Q}}
+
+\setlength{\parskip}{\bigskipamount}
+
+\renewcommand{\labelenumi}{{\arabic{enumi}.}}
+\renewcommand{\labelenumii}{(\roman{enumii})}
+\renewcommand{\labelenumiii}{(\arabic{enumiii})}
+
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+
+% \usepackage{xcolor}
+% \definecolor{base03}{HTML}{002b36}
+% \definecolor{base0}{HTML}{839496}
+% \pagecolor{base03}
+% \color{base0}
+
+% \pgfplotsset{compat=1.15}
+
+\makeatletter
+\renewcommand*\env@matrix[1][*\c@MaxMatrixCols c]{%
+  \hskip -\arraycolsep
+  \let\@ifnextchar\new@ifnextchar
+  \array{#1}}
+\makeatother
+
+\usepackage{xparse}
+
+\ExplSyntaxOn
+    \NewDocumentEnvironment{aside} { o }
+     {\noindent\ignorespaces\\[0.5em]
+       \begin{mdframed}[nobreak=true,backgroundcolor=gray!10]
+         \IfNoValueTF{#1}{}{\textbf{#1}}
+     }
+     {
+     \end{mdframed}
+     }
+\ExplSyntaxOff
+
+\begin{document}
+
+\begin{center}
+  \Large Advanced Linear Algebra Week 9 Day 1
+  \normalsize
+
+  \textbf{2018/11/12} -- Jonathan Hayase, updated by Prof. Weiqing GU
+\end{center}
+
+\section{A Big Picture of Linear ALgebra}
+
+Suppose you have \(A\bm x = \bm b\).
+Then let \(\overline A = \sbr{A\mid \bm b}\).
+Then there is a solution if and only if \(\rank A = \rank \overline A\).
+
+On the other hand, if \(\det A = 0\) then there is a nontrivial solution to \(A \bm x = \bm 0\).
+But if \(\det A \neq 0\) then we have the trivial solution only to \(A\bm x = \bm 0\).
+
+Things like \(\rank\), \(\det\), \(\trace\) are the invariants of \(A\).
+
+Suppose we have a torus and a sphere.
+We can always slide a rubber band off a sphere, but that is not so for a torus, so they are not equivalent topologically.
+
+Similarly, if we care about geometry, then an ellipsoid and sphere are not the same.
+
+\subsection{Differential Geometry}
+
+Given a differentiable manifold, we can always find a tangent plane, which lets us push the problem into linear algebra.
+
+Inverse function on manifold: If \(\m{\dif\phi}\) is invertibe, then \(\phi\) is locally invertible.
+
+\subsection{Multivariate Taylor}
+
+\[f(\bm x) = \underbrace{f(\bm x_0) + \nabla f(\bm x_0)(\bm x - \bm x_0)}_{\text{tangent plane}} + \frac{1}{2!}(\bm x - \bm x_0)^T\nabla^2 f(\bm x_0)(\bm x - \bm x_0)\]
+If \(\bm x_0\) is a ctirical point, then \(\nabla f(\bm x_0) = \bm 0\).
+\begin{align*}
+  f(\bm x) - f(\bm x_0) &= \frac{1}{2!}(\bm x - \bm x_0)^T\nabla^2 f(\bm x_0)(\bm x- \bm x_0)\\
+                       &= \frac{1}{2!}\ip{\bm x- \bm x_0, \bm x - \bm x_0}_{\nabla^2f(\bm x_0)}
+\end{align*}
+Where \(\ip{\bm x, \bm y}_M = \bm x^TM\bm y\) as long as \(M\) is positive definite.
+
+\subsection{Current Research Area in Linear Algebra}
+Research on approximation algorithms for matrices which cannot fit in memory and/or are sparsly represented.
+
+Topological data analysis can only tell us how many ``holes'' a piece of data has, which is why it ``hasn't gone very far''.
+
+Example: Suppose given \(A \in M^{n \times k}\) and \(B \in M^{k \times n}\) which cannot fit into (your) memory.
+But we would still like to find \(AB\).
+Suppose we went for some subset \(C\) of \(A\) and \(D\) of \(B\) such that
+the result of multiplying the two is still \(n \times m\).
+
+Then suppose our goal was to stochastically achieve \(\norm{AB - CD} < \epsilon\) with probability 99\%.
+
+Prof Gu says: 左行右列
+
+\[\m{a & b\\c &d}\m{1 & 0\\ 0 & 0} = \m{a & 0\\ c & 0}\]
+\[\m{a & b\\c &d}\m{0 & 1\\ 1 & 0} = \m{b & d\\ a & c}\]
+
+This means we can do things like
+\[\overbrace{\m{\bm v_1 & \bm v_2 & \bm v_3& \bm v_4& \bm v_5}}^A\m{1 & 0 & 0 & \dots\\0 & 0 & 0 & \dots\\ \vdots & \vdots & 1&\dots\\\vdots & \vdots & \vdots&\dots  \\ 0 & 0 & 0 & \dots} = \m{\bm v_1 & \bm v_3}\]
+
+Also want to solve \(A_{n \times k}x_{k \times 1} = b\).
+Then we might calculate \(SAx = Sb\), where \(S\) means we will select ``important rows'' of \(A\), such that \(\set{\tilde x^*\mid SAx = Sb}\) and \(\set{x^* \mid Ax = b}\) where \(\tilde x^*\) and \(x^*\) are close to each other with probability 0.99 (or more generally \(1 - \delta\)).
+
+Another problem: If \(A\) is large, then we can't fit into (your) computer's memory.
+But we want to find the eigenvalues and vectors of \(A\).
+
+\subsection{Applications}
+
+Suppose you have a UAV flying along a curve, we can attach a frame to every point along the curve representing the local coordinate system of the UAV.
+
+Consider the Lie group (Lie groups are both manifolds and groups)
+\[SO(3) = \set{A \mid A^TA = I, \det A = 1}.\]
+That is all.
+
+Now, suppose you have a compact manifold.
+It's really \(\RR P^3\), the real projective plane, whose double cover is \(S^3\).
+However, once we go into the tangent plane, then this becomes linear algebra.
+Tangent plane at \(I\) is called the Lie algebra of the Lie group.
+
+Suppose we have a curve \(A(t)\) on the manifold starting at \(I\), then \(A^T(t)A(t) = I\) and \(A(0) = I\).
+Suppose we want
+\begin{align*}
+  \sbr{A^T(t)}' A(t) + A^T(t)A'(t) = 0 && \\
+  \sbr{A^T(0)}' A(0) + A^T(0)A'(0) = 0 && \text{plugging in \(t = 0\)}
+                                        \sbr{A^T(0)}' + A'(0) = 0\\
+  \sbr{A'(0)}^T + A'(0) = 0\\
+\end{align*}
+So \(A'(0)\) is a skew-symmetric \(3 \times 3\) matrix.
+In fact the Lie algebra is the set of skew symmetric matrices.
+
+A Lie algebra is a vector space equipped with the commutator bracket:
+\[\sbr{A, B} = AB - BA\]
+Satisfying the Jacobi identity:
+\[\sbr{\sbr{a, B}, C} + \sbr{\sbr{B, C}, A} + \sbr{\sbr{C,A},B} = 0.\]
+
+\section{Convex optimization}
+
+Suppose \(f\) is twice differentiable.
+Then \(f\) is convex if and only if \(\hess f \succ 0\).
+\end{document}

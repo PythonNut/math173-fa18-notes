@@ -1,0 +1,352 @@
+%&myformat
+\documentclass{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{commath}
+\usepackage{xfrac}
+\usepackage{siunitx}
+\usepackage[parfill]{parskip}
+\usepackage[makeroom]{cancel}
+\usepackage{mathtools}
+\usepackage{tabu}
+\usepackage{bm}
+\usepackage[utf8]{inputenc}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{mdframed}
+\usepackage{booktabs}
+\usepackage{tikz-cd}
+\usepackage{centernot}
+% \usepackage{physics}
+\usepackage{mathrsfs}
+\newcommand{\ihat}{\mathbf{\hat i}}
+\newcommand{\jhat}{\mathbf{\hat j}}
+\newcommand{\khat}{\mathbf{\hat k}}
+\newcommand{\rhat}{\mathbf{\hat r}}
+\newcommand{\thetahat}{\bm{\hat \theta}}
+
+\DeclareMathOperator{\trace}{tr}
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\range}{range}
+\DeclareMathOperator{\nullity}{nullity}
+\DeclareMathOperator{\proj}{proj}
+\DeclareMathOperator{\vspan}{span}
+\DeclareMathOperator{\curl}{curl}
+\DeclareMathOperator{\divergence}{div}
+\DeclareMathOperator{\hess}{H}
+\DeclarePairedDelimiter\ip{\langle }{\rangle}
+
+\newcommand{\m}[1]{\begin{bmatrix} #1 \end{bmatrix}}
+\newcommand{\sm}[1]{\left[\begin{smallmatrix} #1 \end{smallmatrix}\right]}
+\newcommand{\vm}[1]{\begin{vmatrix} #1 \end{vmatrix}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\NN}{\mathbb{N}}
+\newcommand{\QQ}{\mathbb{Q}}
+
+\setlength{\parskip}{\bigskipamount}
+
+\renewcommand{\labelenumi}{{\arabic{enumi}.}}
+\renewcommand{\labelenumii}{(\roman{enumii})}
+\renewcommand{\labelenumiii}{(\arabic{enumiii})}
+
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+
+% \usepackage{xcolor}
+% \definecolor{base03}{HTML}{002b36}
+% \definecolor{base0}{HTML}{839496}
+% \pagecolor{base03}
+% \color{base0}
+
+\pgfplotsset{compat=1.15}
+
+\makeatletter
+\renewcommand*\env@matrix[1][*\c@MaxMatrixCols c]{%
+  \hskip -\arraycolsep
+  \let\@ifnextchar\new@ifnextchar
+  \array{#1}}
+\makeatother
+
+\usepackage{xparse}
+
+\ExplSyntaxOn
+    \NewDocumentEnvironment{aside} { o }
+     {\noindent\ignorespaces\\[0.5em]
+       \begin{mdframed}[nobreak=true,backgroundcolor=gray!10]
+         \IfNoValueTF{#1}{}{\textbf{#1}}
+     }
+     {
+     \end{mdframed}
+     }
+\ExplSyntaxOff
+
+\begin{document}
+
+\begin{center}
+  \Large Advanced Linear Algebra Week 5 Day 1
+  \normalsize
+
+  \textbf{2018/10/08} -- Jonathan Hayase, updated by Prof. Weiqing Gu
+\end{center}
+
+\section{Positive Matrices and Applications to Markov Processes}
+
+\textbf{Definition:} A matrix \(P = \del{p_{ij}}_{n \times n}\) is positive if if \(p_{ij} \in \RR\) and \(p_{ij} > 0\) for all \(i, j \in 1, \dots, n\).
+
+\textit{Note: A matrix being positive is not the same as being positive definite (which is \(x^TPx> 0\)).}
+
+Notation:
+\begin{enumerate}
+\item For \(x = \m{x_1& \cdots & x_n}^T\) and \(y = \m{y_1 & \cdots & y_n}^T\), we say \(x < y\) if \(x_i < y_i\) for all \(i = 1, \dots, n\).
+
+\item Say \(x < y\) if \(x_i \leq y_i\) as above.
+
+  Note that tripotomy does not hold here, so \(x \leq y \centernot\implies x < y \lor x = y \).
+
+\item Let \(\xi_0 = \del{1, 1, \dots, 1} \in R\) and vector \(x> 0\).
+  We say  \(x\) is \(L_1\)-normalized if
+  \[\xi_0 = \del{1, \dots, n}\begin{pmatrix}x_1\\\vdots\\x_n\end{pmatrix} = \sum_{i=1}^n x_i =1.\]
+\end{enumerate}
+
+\subsection{Perron's Theorem}
+
+If \(P\) is a positive matrix, then \(P\) has a dominant eigenvalue \(\lambda(P)\) such that:
+\begin{enumerate}
+\item \(\lambda(P) > 0\), \(\lambda(P)\) is an eigenvalue of \(P\) and there exists a eigenvector \(h > 0\) such that \(Ph = \lambda(P)h\).
+\item \(\lambda(P)\) is a simple (e.g. multiplicity 1) eigenvalue.
+\item For any eigenvalue \(\mu\), then \(\abs{\mu} \leq \lambda(P)\).
+\item For any eigenvalue \(\mu\), then if \(\mu \neq \lambda(P)\) we have \(\abs{\mu} < \lambda(P)\) and \(\del{u, f}\) is an eigen pair, then \(f \not\geq 0\).
+\end{enumerate}
+
+\subsubsection{Proof}
+
+Idea: Want to maximize \(\lambda\) such that \(Px = \lambda x\) and \(x \neq 0\) and \(x \geq 0\) for positive \(P\).
+Define
+\[\mathscr{N}(P) = \set{\lambda \in R \mid \lambda \geq 0,\;  \exists x \subseteq \RR^n,\; x \geq 0,\; \xi_0x = 1,\; P\lambda \geq \lambda x} \subseteq \RR\]
+Goal is to show that \(\mathscr{N}(P)\) is nonempty, bounded, and closed subset of \(\RR\).
+
+First, we show that \(\mathscr{N}(P)\) is non-empty.
+Clearly, \(0 \in \mathscr N(P)\), since we may take \(x = \del{1, 0 \dots}\) so \(\xi_0x = 1\) and observe that \(Px \geq 0x \geq 0\).
+Moreover, \(\mathscr N(P)\) contains nonzero element.
+Take \(y = \text{any positive vector}\), then \(Py >  0\).
+Let \(x = \sfrac{y}{\xi_0y} > 0\), then \(\xi_0x = \xi_0 \del{\sfrac{y}{\xi_0y}} = 1\) and \(Px > 0 = \lim_{x \to 0} \lambda x\).
+Notice that \(\lambda \geq 0\) so \(\lim_{\lambda \to 0} \lambda x=0\) so there must exist \(\lambda 0 > 0\) such that \(\lambda_0 x \leq Px\).
+Thus, \(\lambda_0 \in \mathscr N(P)\).
+
+Second, we show that \(\mathscr N(P)\) is bounded.
+Let \(\lambda \in \mathscr N(P)\).
+Then there exists \(x \in \RR^n\) such that \(x \geq 0\), \(\xi_0x = 1\), and \(Px \geq \lambda \).
+Thus, \(\xi_0 Px \geq \xi_0 \lambda x = \lambda\xi_0 x = \lambda\).
+Now write \(\xi_0P = \del{b_1, \dots, b_n}\) where \(b_i\) is the sum of the \(i\)\textsubscript{th} column of \(P\).
+Let \(b = \max_{i} \del{b_1, \dots, b_n}\).
+Then \(b \xi_0 \geq \xi P\), so
+\[b = b1 = b\del{\xi_0x} = \del{b\xi_0}x \geq \xi_0 Px \geq \lambda\]
+Since \(\lambda \geq 0\), we have \(\lambda \in \intcc{0, b}\) for any \(\lambda \in \mathscr N(P)\).
+Hence, \(\mathscr{N}(P)\) is a bounded subset of \(\RR\).
+\begin{aside}[Aside (Stochastic Matrices):]
+  Suppose you have three lily pads, and the probability that the frog jumps from pad 1 to pad 2 is \(\sfrac{2}{3}\) and the probability that the frog stays or jumps to pad 3 are both \(\sfrac{1}{6}\).
+  We can construct a matrix that describes this sort of behavior:
+  \[P=\m{\sfrac{1}{6} & \sfrac{2}{3} & \sfrac{1}{6}\\ \sfrac{1}{2} & 0 & \sfrac{1}{2} \\ \sfrac{1}{4} & \sfrac{1}{2} & \sfrac{1}{4}}\]
+  is a stochastic matrix, \(P\) is positive, and the sum of the rows of \(P\) equal \(1\).
+\end{aside}
+
+\textit{Note: If \(P\) is a stochastic matrix, then \(\xi_0P = \del{1, 1, \dots, 1}\) so \(b = 1\), so \(0 \leq \lambda \leq 1\).}
+
+Third, we are going to show that \(\mathscr N(P)\) is a closed subset of \(\RR\).
+Let \(\set{\lambda_m}_{m=1}^\infty\) be a sequence in \(\mathscr N(P)\) and \(\lim_{m \to \infty} \lambda_m = \lambda\).
+We wish to show that \(\lambda \in \mathscr N(P)\).
+Details of this will be handed out.
+
+Claim is proved, so there exists \(\lambda(P) = \max\set{\lambda \subseteq \mathscr{N}(P)} > 0\).
+Moreover, there exists an  \(h \in \RR^n\) such that \(h \geq 0\), \(\xi_0h=1\), and \(Ph \geq \lambda(P)h\).
+
+Claim 2: \(Ph = \lambda(P)h\) so \(\lambda(P)\) is an eigenvalue w/ non-negative eigenvectors.
+Idea of proof: Prove by contradiction.
+Details in handout.
+
+Claim 3: In fact, we can show that \(h > 0\).
+Proof: Since \(P > 0\) and \(h \geq 0\) and \(h \neq 0\), then \(Ph > 0\).
+Now, since \(Ph = \lambda(P)h\) implies \(\lambda(P)h > 0\).
+So \(h > 0\) since \(\lambda(P) > 0\).
+
+Claim 4: \(\lambda(P)\) is a simple eigenvalue.
+Detail will be handed out.
+
+Claim 5: For any eigenvalue  \(k\) of \(P\), then \(\abs{k} \leq \lambda(P)\) and \(\abs{k} = \lambda(P)\) iff \(k = \lambda(P)\).
+Proof: Let \((k, y)\) be an eigen pair, \(y = \m{y_1 & \cdots & y_n}^T\neq 0\).
+Then \(Py = ky\).
+Look at the \(s\)\textsuperscript{th} element of above equation.
+\begin{align*}
+  \sum_{i = 1}^n P_{sj}y_j &= ky_s\\
+  \abs{k}\abs{y_s} &j= \abs{ky_s} = \abs{\sum_{j=1}^n p_{sy} y_j} \leq \sum_{j = 1}^n \abs{p_{sj}y_j} = \sum_{j=1}^n P_{sj}\abs{y_j}
+\end{align*}
+
+Let \(z = \del{\abs{y_1}, \dots, \abs{y_n}} \geq 0\).
+Then we have \(Pz \geq \abs{k}z\).
+Let \(c = \sfrac{z}{\xi_0z}\), then \(x \geq 0\), \(\xi_0x = 1\), and \(Px \geq \abs{k}x\).
+Therefore, \(\abs{k} \in \mathscr N(P)\), so \(\abs{K} \leq \lambda(P)\).
+Next, we can show if \(\abs{k} = \lambda(P)\) then \(k = \lambda(P)\).
+Details in handout.
+
+Claim 6: Suppose that \(k < \lambda(P)\) and \((k, f)\) is an eigen pair, then \(f \not\ge 0\).
+Proof: consider \(P^T\) we also have \(P^T > 0\).
+Then, (Exercise) \(\lambda(P) = \lambda(P^T)\).
+Let \(\xi > 0\) such that \((\lambda(P), \xi)\) is an eigen pair for \(P^T\).
+Now, \(Pf = kf\) and \(f \neq 0\).
+\(P^T\xi = \lambda(P)\xi\), so \((P^T\xi)^T = \lambda(P)\xi^T\).
+Acting on \(f\) implies \(\xi^TPf \cdot \lambda(P)\xi^Tf\).
+Multiplying both sides by \(\xi^T\) yields \(\xi^Tpf = k\xi^T\) so \(\del{\lambda(P - k)}\xi^Tf = 0\) because \(\lambda(P) - k \neq 0\), so \(\xi^Tf = 0\) and \(\xi>0\) so \(\xi^Tf = 0\) implies \(f \not\geq 0\).
+
+\section{PageRank}
+
+\[\m{\sfrac{1}{4} & 0 & \sfrac{1}{2}\\\sfrac{1}{2}  & \sfrac{1}{2} & \sfrac{1}{2}\\ \sfrac{1}{4} & \sfrac{1}{2} & 0} \to \m{\sfrac{1}{4} +p& p & \sfrac{1}{2}+p\\\sfrac{1}{2} +p & \sfrac{1}{2} +p& \sfrac{1}{2}+p\\ \sfrac{1}{4} +p& \sfrac{1}{2} +p& p}\]
+
+Can use Perron's Theorem.
+
+
+As we noticed that for a Markov chain, the transition stochastic matrix \( P\) may not be positive.
+But \(P \geq 0\).
+(\(P\) is regular if there exist an \(m \in \NN\) such that \(P^m > 0\)).
+Consider the example \(P = \sm{0 & 1\\ 1 & 0}\), then \(P\) is not regular, since \(P^2 = I\), but \(P^2 = P\), and this pattern repeats.
+We still would like to analyze this situation.
+
+\subsection{Frobenius Theorem}
+
+Let \(P \geq 0\) be a \(n\times n\) matrix.
+Then there exist  \(\lambda(P)\) such that
+\begin{enumerate}
+\item \(\lambda(P)\) is an eigenvalue of \(P\), \(\lambda(P) \geq 0\) and there exists \( h \geq 0\) such that \(\xi_0h = 1\) and \(Ph = \lambda(P)h\).
+\item If \(k \in \CC\) is an eigenvalue of \(P\), then
+  \begin{enumerate}
+  \item \(\abs{k} \leq \lambda(P)\).
+  \item \(\abs{k} = \lambda(P)\) implies \(k = \exp\del{\frac{2\pi i k}{m}}\lambda(P)\) for some \(k, m \in \NN\) and \(m \leq n\).
+  \end{enumerate}
+\end{enumerate}
+
+\subsubsection{Proof of 1}
+
+Let's perturb \(P\).
+Let \[P_m = \m{\sfrac{1}{m} & \cdots & \sfrac{1}{m} \\ \vdots & \ddots & \vdots \\\sfrac{1}{m} & \cdots & \sfrac{1}{m} } + P > 0\]
+Then \(\lim_{m \to \infty}P_m = P\).
+By Perron's Theorem, \(P_m\) has a dominant eigenvalue \(\lambda(P) > 0\).
+By Theorem 6, P101, \(\lim_{m \to \infty} \lambda(P_m)\) exists and is an eigenvalue of \(P\).
+
+Claim: \(\lambda(P) \geq 0\) and there exists \(h \geq 0\) such that \(\xi_0h =1\) and \(Ph = \lambda(P)h\).
+Because \(\lambda(P_m) > 0\) we have \(\lim_{m \to \infty} \lambda(P_m) \geq 0 \) so \(\lambda(P) \geq 0\).
+
+Let \(h_m\) satisfy \(P_mh_m = \lambda(P_m)h_m\), \(h_m > 0\), and \(\xi_0h_m = 1\).
+
+As we showed earlier, \(\norm{h_m} \leq \sqrt{n}\).
+Therefore, there exists a subsequence \(\set{h_{m_k}}\) of \(\set{h_m}\) such that \(\lim_{k \to \infty} h_{m_k} \to h\).
+Because \(h_{m_k} > 0\), we have \(h \geq 0\).
+
+Moweover since \(\xi_0h_{m_k} = 1 \) taking the limit of both sides yields \( \xi_0h=1\) so \(h \neq 0\).
+
+Now
+\begin{center}
+  \begin{tikzcd}
+    P_{m_k}h_{m_k} \ar[r, "="] \ar[d, "m \to \infty"] & \lambda(P_{m_k})h_{m_k} \ar[d, "m \to \infty"]\\
+    Ph \ar[r, "="] & \lambda(P)h\\
+  \end{tikzcd}
+\end{center}
+
+
+\subsubsection{Proof of 2}
+
+\begin{enumerate}[label=(\roman*)]
+\item Let \(k \in \CC\) be any eigenvalue of \(P\). Then again by Theorem 6, P101, there exists an eigenvalue \(k_m\) of \(P_m\) such that \(\lim_{m \to \infty} k_m = k\).
+
+  By Perron's Theorem,
+  \begin{center}
+    \begin{tikzcd}
+      \abs{k_m} \ar[r, "\leq"] \ar[d, "m \to \infty"]& \lambda(P_m) \ar[d]\\
+      \abs{k} \ar[r, "\leq"] & \lambda(P)
+    \end{tikzcd}
+  \end{center}
+
+\item \(\abs{k} = \lambda(P)\) so \(\abs{k} = e^{i\theta} \lambda(P)\).
+  Then we show that \(\theta = \exp\del{\frac{2\pi i k}{m}}\).
+  Too much detail. Not required for this class.
+\end{enumerate}
+
+\section{Riesz Representation Theorem}
+
+Recall the Riesz Representation Theorem.
+
+If \(V^n\) is an \(n\) dimensional vector space over a field \(K\), either \(\RR^n\) or \(\CC^n\).
+Then \(V^*\) is the set of linear functions on \(V\).
+\[V^* = \set{ \ell \mid \ell: V \to K, \text{\(\ell\) is linear}}\]
+For all \(\lambda \in V^*\), there exists a \(y\) such that
+\[\ell(x) = \ip{x, y}\]
+for all \(x\). If and only if \(V^*^* = V\).
+
+Key idea: if \(\del{V, \ip{\cdot, \cdot}}\) then orthonormal because great/fast in use
+\[v = \sum_{i=1}^n a_i u_i\]
+
+But if we have no inner product, we want to mimic an orthonormal basis.
+We define a dual basis \(\ell_i(e_j) = \delta_{ij}\).
+Mimics \(u_i(uj) = \ip{u_i, u_j} =\delta_{ij}\).
+
+If there exists an inner product on \(V^*\) then \(\set{\ell_1, \dots, \ell_n}\) is \(\set{u_1, \dots, u_n}\).
+
+Now, we want to extend this to \(C[a, b]\).
+But to do this we will need the following theorem:
+
+\subsection{Hahn--Banach theorem}
+
+Recall \(\del{V, \ip{\cdot, \cdot}}\). Only having \(\del{V, \norm{\cdot}}\) is weaker.
+Even weaker is \(\del{V, p}\), where \(p\) is sublinear.
+
+\textbf{Definition:} A sublinear functional is a real valued function \(p\) on vector space \(X\) which satisfies
+\begin{enumerate}
+\item \(p(x + y) \leq p(x) + p(y)\) for \(x, y \in X\).
+\item \(p(ax) =ap(x) \) for \(a \geq 0, x \in X\).
+\end{enumerate}
+
+\subsubsection{Examples}
+For any linear map \(\ell: X \to \RR\), define \(p(x) = \abs{\ell(x)}\).
+\begin{enumerate}
+\item \(p(x+y) = \abs{\ell(x + y)} \leq \abs{\ell(x)} + \abs{\ell(y)} = p(x) + p(y)\).
+\item \(p(ax) = \abs{\ell(ax)} = a\abs{\ell(x)} = ap(x)\).
+\end{enumerate}
+
+\subsection{Statement of Hahn--Banach theorem for real vector spaces}
+
+Suppose we have \(\del{X/\RR, p}\) for sublinear \(p\)
+\[\eval{f}_Z^{\text{linear functional}} \implies \exists \eval{\tilde f}_X^{\text{linear functional}}:
+  \begin{cases}
+    \tilde{f}(z) = f(z) & \text{for \(z \in Z\)}\\
+    \tilde{f}(x) \leq p(x) & \text{for all \(x \in X\)}\\
+  \end{cases}
+\]
+where \(Z\subseteq X\) is a subspace of \(X\) if \(f(x) \leq p(x)\) on \(Z\).
+
+Let \(x\) be a real vector space and \(p\) be a sublinear functional on \(X\).
+Let \(f\) be a linear functional defined on a subspace  \(Z \subseteq X\) satisfying \(f(z) \leq p(x)\) for all \(z \in Z\).\footnote{This line seems a bit suspicious.}
+Then, there exists linear functional \(\tilde f\) satisfying
+\begin{enumerate}
+\item \(\tilde f(z) = f(z)\) for all \(z \in Z\), and
+\item \(\tilde f(x) \leq p(x)\) for all \(x \in X\).
+\end{enumerate}
+
+\subsection{Proof}
+By Zorn's Lemma.
+
+Recall: \textbf{Zorn's Lemma}: Let \(P\) be a partially ordered set such that every chain has an upper bound in \(P\).
+Then the set \(P\) contains at least one maximum element.
+
+Step 1: Form a set \(\set{\text{all linear functionals of \(f\) that are dominated by \(p\)}}\).
+\[S = \set{\phi \mid \phi:\Dif_\phi \to \RR \text{ is linear}, \Dif_\phi \supset Z,  \phi=\text{\(f\) on \(z\)}, \phi \leq p \text{ on \(\Dif_\phi\)}}\]
+
+Step 2: Define binary relation \(<\) (extension)
+Say \(\phi_1 < \phi_2\) if  \(\phi_2\) is an extension of \(\phi_1\).
+
+Step 3: Every chain \(C \subseteq S\) has an upper bound.
+
+\end{document}

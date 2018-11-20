@@ -1,0 +1,396 @@
+%&myformat
+\documentclass{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{commath}
+\usepackage{xfrac}
+\usepackage{siunitx}
+\usepackage[parfill]{parskip}
+\usepackage[makeroom]{cancel}
+\usepackage{mathtools}
+\usepackage{tabu}
+\usepackage{bm}
+\usepackage[utf8]{inputenc}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{mdframed}
+\usepackage{booktabs}
+\usepackage{tikz-cd}
+% \usepackage{physics}
+\usepackage{mathrsfs}
+\newcommand{\ihat}{\mathbf{\hat i}}
+\newcommand{\jhat}{\mathbf{\hat j}}
+\newcommand{\khat}{\mathbf{\hat k}}
+\newcommand{\rhat}{\mathbf{\hat r}}
+\newcommand{\thetahat}{\bm{\hat \theta}}
+
+\DeclareMathOperator{\trace}{tr}
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\range}{range}
+\DeclareMathOperator{\nullity}{nullity}
+\DeclareMathOperator{\proj}{proj}
+\DeclareMathOperator{\vspan}{span}
+\DeclareMathOperator{\curl}{curl}
+\DeclareMathOperator{\divergence}{div}
+\DeclareMathOperator{\hess}{H}
+\DeclarePairedDelimiter\ip{\langle }{\rangle}
+
+\newcommand{\m}[1]{\begin{bmatrix} #1 \end{bmatrix}}
+\newcommand{\sm}[1]{\left[\begin{smallmatrix} #1 \end{smallmatrix}\right]}
+\newcommand{\vm}[1]{\begin{vmatrix} #1 \end{vmatrix}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\NN}{\mathbb{N}}
+\newcommand{\QQ}{\mathbb{Q}}
+
+\setlength{\parskip}{\bigskipamount}
+
+\renewcommand{\labelenumi}{{\arabic{enumi}.}}
+\renewcommand{\labelenumii}{(\roman{enumii})}
+\renewcommand{\labelenumiii}{(\arabic{enumiii})}
+
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+
+% \usepackage{xcolor}
+% \definecolor{base03}{HTML}{002b36}
+% \definecolor{base0}{HTML}{839496}
+% \pagecolor{base03}
+% \color{base0}
+
+\pgfplotsset{compat=1.15}
+
+\makeatletter
+\renewcommand*\env@matrix[1][*\c@MaxMatrixCols c]{%
+  \hskip -\arraycolsep
+  \let\@ifnextchar\new@ifnextchar
+  \array{#1}}
+\makeatother
+
+\usepackage{xparse}
+
+\ExplSyntaxOn
+    \NewDocumentEnvironment{aside} { o }
+     {\noindent\ignorespaces\\[0.5em]
+       \begin{mdframed}[nobreak=true,backgroundcolor=gray!10]
+         \IfNoValueTF{#1}{}{\textbf{#1}}
+     }
+     {
+     \end{mdframed}
+     }
+\ExplSyntaxOff
+
+\begin{document}
+
+\begin{center}
+  \Large Advanced Linear Algebra Week 4 Day 1
+  \normalsize
+
+  \textbf{2018/10/01} -- Jonathan Hayase, updated by Prof. Weiqing Gu
+\end{center}
+
+\section{Normed Linear (Vector) Space}
+
+\subsection{Definition}
+A linear space \(X\) over \(K\) (\(K= \text{\(\RR\) or \(\CC\)}\)) is a normed linear space if there exists \(\norm{\cdot} : X \to \RR\) satisfying\footnote{missed something small here}
+\begin{enumerate}
+\item For \(x \in X\), \(\norm{x}\geq 0\) and \(x = 0\) if and only if \(x = 0\).
+\item Triangle inequality: For \(x, y \in X\), \(\norm{x+y} \leq \norm{x} + \norm{y}\).
+\item For \(x \in X\) and \(k \in K\), \(\norm{kx} = \abs{k}\norm{x}\).
+\end{enumerate}
+
+\subsection{Examples}
+\begin{enumerate}
+\item \(X = \RR^n\) and \(\norm{x} = \sqrt{\ip{x, x}}\).
+\item \(X = K^n\) and define \(\norm{x}_\infty = \norm{\del{x_1, \dots, x_n}}_\infty = \max \set{\abs{x_1}, \dots, \abs{x_n}}\).
+
+  Note property 1. and 3. use
+
+  For 3, \(\norm{x + y}_\infty = \)\footnote{skipped some things here}
+
+\item \(X = K^n\) where \(x = \del{x_1, \dots, x_n} \in X\).
+  Define \(\norm{x}_1 = \sum_{i=1}^n \abs{x_i}\).
+
+\item \(X = K^n\) with \(x\) as above.
+  For \(p \geq 1\), define the \(p\)-norm as
+  \[\norm{x}_p = \del{\sum_{i=1}^n \abs{x_i}^p}^{\sfrac{1}{p}}.\]
+
+  It's each to check \(1\) and \(3\).
+  The proof of \(2\) requires Holder's Inequality.
+
+\end{enumerate}
+
+\section{Holder's Inequality}
+
+\textbf{Statement}
+
+For \(\sfrac{1}{p} + \sfrac{1}{q} = 1\)
+\[\norm{\ip{x, y}} \leq \norm{x}_p\norm{y}_y\]
+
+Note that if \(p = q = 2\), then this is the Schwarz Inequality.
+
+\begin{align*}
+  \norm{x+y}_p = \del{\sum_{i=1}^n \norm{x_i + y_i}^p}6{\sfrac{1}{p}}\\
+  \leq \del{\sum_i\del{\norm{x_i} + \norm{y_i}}^p}^{\sfrac{1}{p}}\\
+\end{align*}
+Note that
+\[\sum\del{\norm{x_i} + \norm{y_i}}^p = \sum_i \del{\norm{x_i} + \norm{y_i}}\del{\norm{x_i} +\norm{y_i}}^{\sfrac{p}{q}}\]
+since \(p - 1 = \sfrac{p}{q}\).
+Thus we have
+\begin{align*}
+  \del{\sum_i\del{\norm{x_i} + \norm{y_i}}^p}^{\sfrac{1}{p}}
+  &=  \sum_i \norm{x_i}\del{\norm{x_i} + \norm{y_i}}^{\sfrac{p}{q}} + \sum_i\norm{y_i}\del{\norm{x_i} + \norm{y_i}}^{\sfrac{p}{q}}.\\
+  &\leq \del{\sum_i \norm{x_i}}^{\sfrac{1}{p}} \del{\del{\sum_i\del{\norm{x_i} + \norm{y_i}}^{\sfrac{p}{q}}}^q}^{\sfrac{1}{q}} + \del{\sum_i \norm{y_i}}^{\sfrac{1}{p}} \del{\del{\sum_i\del{\norm{x_i} + \norm{y_i}}^{\sfrac{p}{q}}}^q}^{\sfrac{1}{q}}\\
+  &= \sbr{\del{\sum_i \norm{x_i}^p}^{\sfrac{1}{p}} + \del{\sum_i \norm{y_i}^p}^{\sfrac{1}{p}}}\sbr{\sum_i \del{\norm{x_i} + \norm{y_i}}^p}^{\sfrac{1}{q}}\\
+  &\implies  \del{\sum_i \del{\norm{x_i} + \norm{y_i}}^p}^{\cancelto{\sfrac{1}{p}}{1 - \sfrac{1}{q}}} \leq \norm{x}_p + \norm{y}_p.
+\end{align*}
+Therefore
+\[\underbrace{\del{\sum_i\norm{x_i + y_i}^p}^{\sfrac{1}{p}}}_{\norm{x + y}_p} \leq \norm{x}_p + \norm{y}_p\]
+
+\footnote{I'm not sure I follow exactly what happened here.}
+
+Q: How are the different norms related.
+
+\textbf{Definition:} Norms \(\abs{\cdot}\) and \(\norm{\cdot}\) on \(X\) are called \textbf{equivalent} if there exists constants \(c, C\) such that, for all \(x \in X\),
+\[\abs{x} < c\norm{x}\text{ and }\norm{x} < C\abs{x}\]
+
+\textbf{Theorem:} Any two norms on a finite dimensional linear space \(X\) are equivalent.
+
+\section{Banach Space}
+
+\subsection{Definition}
+A Banach space is a vector space over a field \(K\) (say \(K \in \set{\RR^n, \CC^n}\)) which is equipped with a norm \(\norm{\cdot}\), which is complete with respect to the norm.
+
+Suppose we have a curve (shaped like a hand).
+Rotating it does not change the shape. (In the complexes, we have \(z_i \sim e^{i\theta}z_i\).)
+
+\subsection{Example}
+
+Consider the set space \(C\intcc{a, b}\), the set of continuous functions on \([a, b] \subset \RR\) with norm
+\[\norm{f} = \sup_{x \in \intcc{a, b}} \abs{f(x)}\]
+This norm does not come from an inner product.
+Therefore, all Hilbert spaces are Banach spaces, but the inverse is not true.
+
+\section{Bounded Linear Operator}
+
+\subsection{Definition}
+
+Suppose we have normed linear spaces \(\del{V, \abs{\cdot}}\) and \(\del{W, \abs{\cdot}}\).
+And some \(L: V \to W\).
+A linear operator (or transformation) \(L\) between two normed linear spaces if there exists an \(M \in \RR\) such that
+\[\norm{L(v)}_{W} \leq M \abs{v}_v\]
+or
+\[\frac{\norm{L(v)}_W}{\abs{v}_v} \leq M.\]
+
+\subsection{Example 1}
+
+The shift operator on \(\ell^2\) space of all sequences \(\del{x_0, x_1, \dots, x_n, \dots}\).
+Where \(x_0^1 + x_1^2 + \cdots < \infty\) and
+\[L(x_0, x_1, x_2, \dots) = \del{0, x_0, x_1, \dots}\]
+is bounded. Its operator number\footnote{Not sure this word is right} is \(1\).
+
+\subsection{Example 2}
+Integral transformation
+\[K: [a, b ] \times [c, d] \to \RR\]
+And
+\[\mathop{L} f(y)  = \int_{x=a}^b K(x, y)f(x)\, \dif x\]
+\(L\) is bounded.
+
+\section{Schatten \(p\)-norm}
+
+\subsection{Definition}
+
+Let \(H_1, H_2\) be separable Hilbert spaces and \(T\) be a linear bounded operator from \(H_1\) to \(H_2\).
+For \(p \in \intco{1, \infty}\), define the Schatten \(p\)-norm of this operator as
+\[\norm{T}_p \triangleq \del{\sum_{?}S_n^p(t)}^{\sfrac{1}{p}}\]
+where \(S_1(T) \geq S_2(T) \geq \cdots S_n(T) \geq \cdots \geq 0\), are the singular values of \(T\).
+
+If we have \(T \leftrightarrow A\) then if \(A^TA\) has eigenvalues \(\lambda_1, \dots, \lambda_n\), then \(S_i = \sqrt{\lambda_i}\).
+
+Note: \(A^TA\) is semi-positive definite because
+\[x^T\del{A^TA}x = \del{Ax}^T\del{Ax} = \norm{Ax}^2 \geq 0\]
+for all \(x\).
+Thus \(Ax\) is semi-positive definite.
+So, \(\lambda_i \geq 0\) for \(i = 1, 2, \dots\).
+
+Note if \(p = 2\),
+\[\norm{T}_2 = \sum_i \del{\sqrt{\lambda_i}}^2 = \lambda_1 + \dots + \lambda_n = \trace T\]
+Importantly, we can show \(\norm{T}_p^p = \trace\del{\abs{T}^p}\).
+
+\section{Frech\'et Derivative}
+
+\subsection{Definition}
+
+A Frech\'et derivative is a derivative on a Banach space.
+
+It enables us to do calculus of variations.
+
+Definition: Let \(\del{V, \abs{\cdot}_V}\) and \(\del{W, \abs{\cdot}_W}\) be normed spaces.
+Let \(U \subseteq V\). Then \(f: U \subseteq V \to W\) is called Frech\'et differentiable if there exists a bounded linear operator \(A: V \to W\) such that
+\[\lim_{h \to 0} \frac{\norm{f(x+h) - f(x) - A h}_W}{\norm{h}_V} = 0\]
+\begin{aside}[Recall:]
+  Let \(f: U \subseteq \RR^n \to \RR\), then we have
+  \[f(\bm x) = f(\bm x_0) + \nabla f(\bm x_0)(\bm x - \bm x_0) + \frac{1}{2}\del{\bm x - \bm x_0}^T \nabla^2 f(\bm x_0)(\bm x - \bm x_0) + \cdots.\]
+\end{aside}
+Here,
+\[f(x + h) = f(x) + Ah + o(h)\]
+if there exists such an operator \(A\) then it is unique and we define
+\[\Dif f(x) = A\]
+and call this the Frech\'et derivative of \(f\) at \(x\).
+
+Say \(f\) is \(c'\) if  \(\Dif f : U \to B(v, w), x \to \Dif f(x) : V \to W\)
+Continuous for each value of \(x_0\).
+Theorem: \(f\) is \(c'\implies\) \(f\) is differentiable.
+
+\subsection{Example 1}
+
+Let \(V = \RR^n\) and \(W = \RR^m\) and consider some \(f: \RR^n \to \RR^m\).
+\begin{itemize}
+\item If \(n = m = 1\), then \(f\) is a function.
+\item If \(n >1\) and \(m = 1\) then \(f\) is a ``graph''.
+\item If \(n = 1\) and \(m > 1\) then \(f\) is a curve.
+\item \(n > 1\) and \(m> 1\)
+\end{itemize}
+
+In this case, the Frech\'et Derivative is our usual derivative.
+\[\Dif f = \m{\dpd{f_1}{x_1} & \dots& \dpd{f_1}{x_n}\\\vdots & \ddots & \vdots\\ \dpd{f_n}{x_1}& \cdots & \dpd{f_n}{x_n}}
+  \begin{array}{l}
+    \leftarrow \nabla f_1\\[3em]
+    \leftarrow \nabla f_n
+  \end{array}
+\]
+
+\subsection{Example 2}
+
+Consider \(f: \del{M_{n, m}, \norm{\cdot}} \to \del{M_{k, l}, \norm{\cdot}}\)
+\[\underbrace{X}_{\stackrel{\rotatebox{90}{=}}{\m{x_{11} & \cdots & x_{1n}\\\vdots & \ddots&\vdots\\x_{n1} & \cdots & x_{nn}}}} = \underbrace{A}_{\text{is fixed}}X\]
+\(f\) is called a matrix function.
+
+\subsection{Example 3}
+
+Consider \(X \in \RR^n \stackrel{f}{\to} x^TAx\)
+\[\Dif f = ?\]
+Suppose \(n = 2\) then
+\[f\m{x_1\\x_2} = \m{x_1 & x_2}\m{a_{11} & a_{12}\\ a_{21} & a_{22}}\m{x_1\\ x_2}\]
+
+\section{Matrix Calculus}
+
+Given dimension compatible matrix-valued forms of matrix variable \(f(x)\) and \(g(x)\).
+\[\nabla_x \sbr{f(x)^T g(x)} = \nabla_x(f)g + \nabla_X(g) f\]
+is the product rule.
+
+E.g. \(\nabla_x(x^TAx) = \nabla_x(x) Ax + \nabla_x(Ax)x\).
+
+
+\[x = \m{x_{11} & x_{12}\\ x_{21} & x_{22} } \to\m{x_{11} & x_{12}\\ x_{21} & x_{22} } \]
+In general
+
+\[ \m{x_{11} & x_{12}\\ x_{21} & x_{22} } \to\m{g_{11}\del{x_{11}} & g_{12}\del{x_{12}}\\ g_{21}\del{x_{21}} & g_{22}\del{x_{22}} } \]
+Then
+\[\nabla g_{ij} = \m{\dpd{g_{ij}}{x_{11}} & \dpd{g_{ij}}{x_{12}} \\ \dpd{g_{ij}}{x_{21}} & \dpd{g_{ij}}{x_{22}}}\]
+and
+\[\nabla^2 g = \m{\nabla\del{\dpd{g}{x_{11}}} & \cdots & \nabla\del{\dpd{g}{x_{12}}}\\ \vdots & \ddots & \vdots\\ \nabla\del{\dpd{g}{x_{21}}} & \cdots & \nabla\del{\dpd{g}{x_{22}}}}\]
+
+Hessian of \(f\) where \(f:\RR^n \to \RR \),
+\[\nabla f = \m{\dpd{f}{x_1} & \cdots & \dpd{f}{x_n}}\]
+Then
+\[\nabla^2 f = \m{\dmd{f}{2}{x_1}{}{x_1}{} & \cdots & \dmd{f}{2}{x_1}{}{x_n}{}\\ \vdots & \ddots & \vdots \\\dmd{f}{2}{x_n}{}{x_1}{} & \cdots & \dmd{f}{2}{x_n}{}{x_n}{}}\]
+
+Q: How to find the Frech\'et derivative
+\[A \stackrel{f}{\to} A^{-1}\]
+\[M_n \stackrel{f}{\to} M_n\]
+Claim
+\[\Dif_A F(H) = -A^{-1}HA^{-1}\]
+for all matrix \(H\).
+
+Assume \( \norm{A^{-1}H} \leq 1\), we have
+\begin{align*}
+  \del{A+H}^{-1}
+  &= \del{A\del{I + A^{-1}H}}^{-1}\\
+  &= (I + A^{-1}H)^{-1} A^{-1} = \sum_{k=0}^\infty (-1)^k (A^{-1}H)^kA^{-1}\\
+  \del{A+H}^{-1} &= A^{-1} - A^{-1}HA^{-1} + o(H)\\
+  \Dif F(A)(H) &= -A^{-1}HA^{-1}
+\end{align*}
+
+\section{Hellinger Distance}
+
+The set of all probability distributions functions ????? space (locally looks like a vector space).
+
+Let \(P, Q\) be two probability distributions with density functions \(p\) and \(q\).
+Then
+\[H^2(P, Q) = \frac{1}{2}\int(\sqrt{p} - \sqrt{q})^2\,\dif x = 1 - \int \sqrt{p(x)q(x)}\,\dif x\]
+HW Hint: You can use the Schwarz inequality to show \(0 \leq H(P, Q ) \leq 1\).
+
+For discrete distributions
+\[H(P, Q) = \frac{1}{\sqrt{2}} \sqrt{\sum_{i=1}^k \del{\sqrt{p} - \sqrt{q}}^2}\]
+where
+\[P = (p_1, \dots, p_k)\text{ and }Q = (q_1, \dots, q_n)\]
+are probability distributions
+
+\section{KL Divergence}
+Discrete case
+\[D_{KL} (P \mid\mid Q) = -\sum_i p(i) \log\frac{q(i)}{p(i)} =  \sum_i p(i) \log\frac{p(i)}{q(i)}\]
+Continuous case
+\[D_{KL} (P \mid\mid Q) = -\int_{\infty}^\infty p(x) \log\frac{q(x)}{p(x)}\,\dif x\]
+
+Suppose \(N_1 = N(\mu_1, \sigma_1^2)\) and \(N_2 = N(\mu_2, \sigma_2^2)\).
+Then
+\[D_{KL}(N_1\| N_2) = \frac{1}{2}\del{\trace\del{\Sigma_1^{-1}\Sigma_o}}\trace\del{\mu_1 - \mu_0}^T-k + \ln\del{\frac{\det \Sigma_1}{\det \Sigma_0}}\]
+
+\section{Bhattacharyya Distance}
+
+\[D_b(P, Q) = -\ln\del{BC(P, Q)}\]
+where
+\[BC(P, Q) = \sum_{x \in X}\sqrt{p(x)q(x)}\]
+Where \(BC(P, Q)\) is called the Bhattacharyya coefficients.
+\[D_B(p, q) = \frac{1}{4}\ln\del{\frac{1}{4}\del{\frac{\sigma_p^2}{\sigma_q^2} + \frac{\sigma_q^2}{\sigma_p^2} + 2}} + \frac{1}{4} \frac{\del{\mu_p - \mu_q}^2}{\sigma_p^2 + \sigma_q^2}\]
+
+\section{Rayleigh quotient}
+
+If \(M\) is positive definite, we can use \(M\) to define an inner product
+\[\ip{x, Mx} = x^TMx\]
+Want to compare \(\ip{\cdot,\cdot}_M\) with \(\ip{\cdot, \cdot}_i = x^Tx = \norm{x}\).
+\[x^^TMx = q(x)\]
+where \(q\) is a quadratic form, and
+\[x^TMx = \sum_{i, j = 1}^n m_{ij}x_ix_j\]
+In many applications, we want to maximize or minimize \(q(x)\) subject to \(\norm{x} = 1\).
+
+Note: If we solve this \(q(x_0) \geq q(x)\), \(\norm{x_0}=1\) and for all \(x\) with \(\norm{x} = 1\), for all \(x\),
+\begin{align*}
+  q\del{\frac{x}{\norm{x}}} \leq q(x_0) &\implies \frac{1}{\norm{x}^2q(x)} \leq q(x_0) = \max\set{\frac{q(x)}{\norm{x}^2}}
+\end{align*}
+
+Definition the Rayleigh quotion \(R\) of \(M\) determined by
+\[R a: X \setminus \set{0} \to R\]
+by
+\[R(x) = R_M(x) = \frac{q(x)}{p(x) = \frac{\ip{x, Mx}}}{\ip{x, x}}\]
+for \(x \neq 0\).
+
+Key: We can use \(R(x)\) to calculate eigenvalues if we estimate eigenvectors.
+
+Claim: \(R_M\) is continuous on \(S = \set{x \in X | \norm{x} = 1}\).
+Hint: \(x_k \to x\), \(\norm{x_k} = 1\) show that \(M x_k \to M x\).
+\[\abs{\ip{x_k, Mx_k} - \ip{x, Mx}}\]
+And you can prove it...
+
+Claim 2: Let \(R(x_0) = \max{R(x) \mid \norm{x} = 1}\).
+Then \(R(x_0)\) (\(=q(x_0)\)) is an eigenvalue and \(x_0\) is an eigenvector.
+
+Claim 3: We can decompose \(X  = \vspan \set{x_0} \oplus \hat{X}\), where \(\vspan\set{x_0} \perp \hat{X}\).
+Then for \(\hat{x} \in \hat{X}\), \(\ip{M\hat{x}, x_0} = \ip{\hat{x}, M x} = \ip{\hat x, a x_0} = a\ip{ \hat x, x_0} = 0\).
+
+Now, \(M\) can be viewed as \(\hat X \to \hat X\).
+We can iterate to find the eigenvalues and vectors.
+
+Max/min principles any eigenvalue \(a_j = \min_{\dim S = 1} \set{\max_{x \in S, x \neq 0} \frac{\ip{x, Mx}}{\ip{x, x}}}\)
+for \(x \in S\) and \(x \neq 0\) and \(H\) \(a_1 \leq a_2 \leq \cdots \leq a_n\).
+
+Foundation for game theory.
+
+
+\end{document}
